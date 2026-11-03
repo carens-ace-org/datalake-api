@@ -10,6 +10,6 @@
 	<classpathentry kind="var" path="JCN_HOME/jplugin2.jar"/>
 	<classpathentry kind="var" path="COMMON_CLASSES_HOME/IntegrationAPI.jar"/>
 	<classpathentry kind="con" path="com.ibm.etools.mft.uri.classpath.MBProjectReference"/>
-	<classpathentry kind="lib" path="C:/Users/Caren Kipchirchir/IBM/ACET13/datalake/datalake_api/postgresql-42.7.13.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Caren.Kipchirchir/IBM/ACET13/workspace/datalake_api/postgresql-42.7.13.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

@@ -2,17 +2,17 @@ package com.jubilee.datalake.processor;
 
 import com.ibm.broker.javacompute.MbJavaComputeNode;
 import com.ibm.broker.plugin.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Timestamp;
+import com.jubilee.datalake.model.QueryParams;
+import com.jubilee.datalake.utils.Utils;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class GetActisureDimSchemeCustomersProcessor extends MbJavaComputeNode {
+
+    private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
+    private static final String DB_POLICY = "{Database_Policies}:CrmStagingDbConnectionPoolManager";
 
     @Override
     public void evaluate(MbMessageAssembly inAssembly) throws MbException {
@@ -27,98 +27,105 @@ public class GetActisureDimSchemeCustomersProcessor extends MbJavaComputeNode {
         MbMessageAssembly alternateAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), alternateMessage);
 
         try {
-            // 1. Extract Query Parameters
-            String fromDate = getParam(inAssembly, "fromDate");
-            String toDate = getParam(inAssembly, "toDate");
-            String status = getParam(inAssembly, "status");
-
-            // 2. Validate Input Parameters
-            if (fromDate == null || fromDate.isEmpty() || 
-                toDate == null || toDate.isEmpty() || 
-                status == null || status.isEmpty()) {
-                sendErrorResponse(alternateMessage, outLocalEnv, 400, "Missing required query parameters: fromDate, toDate, and status are mandatory.");
+            QueryParams params = Utils.extractAndValidateParams(inAssembly);
+            if (params.hasError()) {
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, params.getErrorCode(), params.getErrorMessage());
                 alternate.propagate(alternateAssembly);
                 return;
             }
 
-            String cleanStatus = status.trim();
-            if (!"NEW".equalsIgnoreCase(cleanStatus) && !"UPDATED".equalsIgnoreCase(cleanStatus)) {
-                sendErrorResponse(alternateMessage, outLocalEnv, 400, "Invalid status parameter. Must be either 'NEW' or 'UPDATED'.");
+            System.out.println("DEBUG - Processing Scheme Customers | Status: " + params.status + " | From: " + params.fromDate + " | To: " + params.toDate);
+
+            boolean recordsFound = executeQueryAndBuildResponse(outMessage, params);
+
+            if (recordsFound) {
+                out.propagate(outAssembly);
+            } else {
+                String errorMsg = String.format("No %s scheme records found between %s and %s", 
+                        params.status.toUpperCase(), params.fromDate, params.toDate);
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, 404, errorMsg);
                 alternate.propagate(alternateAssembly);
-                return;
-            }
-
-            // 3. Construct Variant SQL Query & Boundaries
-            String dateColumn = "NEW".equalsIgnoreCase(cleanStatus) ? "\"_date_loaded\"" : "\"_date_changed\"";
-            String startTimestampStr = formatStartTimestamp(fromDate.trim());
-            String endTimestampStr = formatEndTimestamp(toDate.trim());
-
-            String sql = "SELECT * FROM \"Actisure_Dim_Scheme\" " +
-                         "WHERE " + dateColumn + " >= ?::timestamp AND " + dateColumn + " < ?::timestamp";
-
-            // 4. Database Connection via standard CrmStagingDbConnectionPoolManager policy
-            Connection conn = getJDBCType4Connection("{Database_Policies}:CrmStagingDbConnectionPoolManager", JDBC_TransactionType.MB_TRANSACTION_AUTO);
-
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, startTimestampStr);
-                ps.setString(2, endTimestampStr);
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    MbElement root = outMessage.getRootElement();
-
-                    // Set HTTP Reply Header
-                    MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
-                    httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
-
-                    // Set JSON Root Array
-                    MbElement jsonRoot = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
-                    jsonRoot.setSpecificType(MbJSON.ARRAY);
-
-                    ResultSetMetaData rsmd = rs.getMetaData();
-                    int columnCount = rsmd.getColumnCount();
-                    boolean hasRecords = false;
-
-                    SimpleDateFormat tsFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-
-                    // 5. Dynamic ResultSet Mapping with Null Omission
-                    while (rs.next()) {
-                        hasRecords = true;
-                        MbElement itemObj = jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
-                        itemObj.setSpecificType(MbJSON.OBJECT);
-
-                        for (int i = 1; i <= columnCount; i++) {
-                            String colName = rsmd.getColumnLabel(i);
-                            Object colValue = rs.getObject(i);
-
-                            // Omit database null fields completely
-                            if (colValue == null) {
-                                continue;
-                            }
-
-                            if (colValue instanceof Number) {
-                                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
-                            } else if (colValue instanceof Boolean) {
-                                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
-                            } else if (colValue instanceof Timestamp) {
-                                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, tsFormat.format((Timestamp) colValue));
-                            } else {
-                                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue.toString());
-                            }
-                        }
-                    }
-
-                    if (hasRecords) {
-                        out.propagate(outAssembly);
-                    } else {
-                        sendErrorResponse(alternateMessage, outLocalEnv, 404, "No " + cleanStatus.toUpperCase() + " scheme records found between " + fromDate + " and " + toDate);
-                        alternate.propagate(alternateAssembly);
-                    }
-                }
             }
 
         } catch (Exception e) {
-            sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: " + e.getMessage());
+            System.err.println("Database Error: " + e.getMessage());
+            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: There was a problem establishing a connection to the given database URL.");
             alternate.propagate(alternateAssembly);
+        }
+    }
+
+    private boolean executeQueryAndBuildResponse(MbMessage outMessage, QueryParams params) throws Exception {
+        String dateColumn = "NEW".equals(params.status) ? "\"_date_loaded\"" : "\"_date_changed\"";
+        String startTimestampStr = formatStartTimestamp(params.fromDate);
+        String endTimestampStr = formatEndTimestamp(params.toDate);
+
+        String sql = "SELECT * FROM \"Actisure_Dim_Scheme\" " +
+                     "WHERE " + dateColumn + " >= TIMESTAMP '" + startTimestampStr + "' " +
+                     "AND " + dateColumn + " < TIMESTAMP '" + endTimestampStr + "'";
+
+        try (Connection conn = getJDBCType4Connection(DB_POLICY, JDBC_TransactionType.MB_TRANSACTION_AUTO)) {
+            if (conn == null) {
+                throw new Exception("Failed to obtain database connection from policy: " + DB_POLICY);
+            }
+            try (PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+
+                return buildJsonPayload(outMessage, rs);
+            }
+        }
+    }
+
+    private boolean buildJsonPayload(MbMessage outMessage, ResultSet rs) throws Exception {
+        MbElement root = outMessage.getRootElement();
+
+        MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
+        httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
+
+        MbElement jsonRoot = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
+        jsonRoot.setSpecificType(MbJSON.OBJECT);
+
+        jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "success", true);
+        jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "message", "Data retrieved successfully");
+        jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "statusCode", 200);
+
+        MbElement dataArray = jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME, "data", null);
+        dataArray.setSpecificType(MbJSON.ARRAY);
+
+        return populateResultSetRows(rs, dataArray);
+    }
+
+    private boolean populateResultSetRows(ResultSet rs, MbElement dataArray) throws Exception {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        SimpleDateFormat tsFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
+        boolean hasRecords = false;
+
+        while (rs.next()) {
+            hasRecords = true;
+            MbElement itemObj = dataArray.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
+            itemObj.setSpecificType(MbJSON.OBJECT);
+            mapRowColumns(rs, rsmd, columnCount, itemObj, tsFormat);
+        }
+
+        return hasRecords;
+    }
+
+    private void mapRowColumns(ResultSet rs, ResultSetMetaData rsmd, int columnCount, MbElement itemObj, SimpleDateFormat tsFormat) throws Exception {
+        for (int i = 1; i <= columnCount; i++) {
+            String colName = rsmd.getColumnLabel(i);
+            Object colValue = rs.getObject(i);
+
+            if (colValue == null) {
+                continue;
+            }
+
+            if (colValue instanceof Number || colValue instanceof Boolean) {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
+            } else if (colValue instanceof Timestamp) {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, tsFormat.format((Timestamp) colValue));
+            } else {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue.toString());
+            }
         }
     }
 
@@ -140,56 +147,5 @@ public class GetActisureDimSchemeCustomersProcessor extends MbJavaComputeNode {
         } catch (Exception e) {
             return inputDate + " 23:59:59";
         }
-    }
-
-    private String getParam(MbMessageAssembly assembly, String key) {
-        try {
-            MbElement el = assembly.getLocalEnvironment().getRootElement().getFirstElementByPath("REST/Input/Parameters/" + key);
-            if (el != null && el.getValueAsString() != null && !el.getValueAsString().trim().isEmpty()) {
-                return el.getValueAsString().trim();
-            }
-
-            el = assembly.getLocalEnvironment().getRootElement().getFirstElementByPath("HTTP/Input/QueryString/" + key);
-            if (el != null && el.getValueAsString() != null && !el.getValueAsString().trim().isEmpty()) {
-                return el.getValueAsString().trim();
-            }
-        } catch (Exception ignored) {}
-        return null;
-    }
-
-    private void sendErrorResponse(MbMessage altMsg, MbMessage altEnv, int code, String msg) throws MbException {
-        MbElement localEnvRoot = altEnv.getRootElement();
-        MbElement dest = localEnvRoot.getFirstElementByPath("Destination");
-        if (dest == null) {
-            dest = localEnvRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Destination", null);
-        }
-
-        MbElement http = dest.getFirstElementByPath("HTTP");
-        if (http == null) {
-            http = dest.createElementAsLastChild(MbElement.TYPE_NAME, "HTTP", null);
-        }
-
-        MbElement replyCode = http.getFirstElementByPath("ReplyStatusCode");
-        if (replyCode == null) {
-            http.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ReplyStatusCode", code);
-        } else {
-            replyCode.setValue(code);
-        }
-
-        MbElement root = altMsg.getRootElement();
-        MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
-        httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
-
-        MbElement json = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
-        json.setSpecificType(MbJSON.OBJECT);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "success", false);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "message", msg);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "statusCode", code);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "responseCode", "ERROR");
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "status", "99");
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        sdf.setTimeZone(TimeZone.getTimeZone("Africa/Nairobi"));
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "timestamp", sdf.format(new Date()));
     }
 }

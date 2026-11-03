@@ -2,6 +2,9 @@ package com.jubilee.datalake.processor;
 
 import com.ibm.broker.javacompute.MbJavaComputeNode;
 import com.ibm.broker.plugin.*;
+import com.jubilee.datalake.model.QueryParams;
+import com.jubilee.datalake.utils.Utils;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,9 +13,11 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class GetActisureDimBeneficiaryCustomersProcessor extends MbJavaComputeNode {
+
+    private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
+    private static final String DB_POLICY = "{Database_Policies}:CrmStagingDbConnectionPoolManager";
 
     @Override
     public void evaluate(MbMessageAssembly inAssembly) throws MbException {
@@ -27,100 +32,111 @@ public class GetActisureDimBeneficiaryCustomersProcessor extends MbJavaComputeNo
         MbMessageAssembly alternateAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), alternateMessage);
 
         try {
-            // 1. Extract Query Parameters
-            String fromDate = getParam(inAssembly, "fromDate");
-            String toDate = getParam(inAssembly, "toDate");
-            String status = getParam(inAssembly, "status");
-
-            if (fromDate == null || fromDate.isEmpty() || 
-                toDate == null || toDate.isEmpty() || 
-                status == null || status.isEmpty()) {
-                sendErrorResponse(alternateMessage, outLocalEnv, 400, "Missing required query parameters: fromDate, toDate, and status are mandatory.");
+            QueryParams params = extractAndValidateParams(inAssembly);
+            if (params.hasError()) {
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, params.getErrorCode(), params.getErrorMessage());
                 alternate.propagate(alternateAssembly);
                 return;
             }
 
-            String cleanStatus = status.trim();
-            if (!"NEW".equalsIgnoreCase(cleanStatus) && !"UPDATED".equalsIgnoreCase(cleanStatus)) {
-                sendErrorResponse(alternateMessage, outLocalEnv, 400, "Invalid status parameter. Must be either 'NEW' or 'UPDATED'.");
+            boolean recordsFound = executeQueryAndBuildResponse(outMessage, params);
+
+            if (recordsFound) {
+                out.propagate(outAssembly);
+            } else {
+                String errorMsg = String.format("No %s records found between %s and %s", 
+                        params.status.toUpperCase(), params.fromDate, params.toDate);
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, 404, errorMsg);
                 alternate.propagate(alternateAssembly);
-                return;
             }
 
-            // 2. Build Query
-            String dateColumn = "NEW".equalsIgnoreCase(cleanStatus) ? "\"_date_loaded\"" : "\"_date_changed\"";
-            String startTimestampStr = formatStartTimestamp(fromDate.trim());
-            String endTimestampStr = formatEndTimestamp(toDate.trim());
+        } catch (Exception e) {
+            System.err.println("Database Error: " + e.getMessage());
+            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 500, 
+                "Internal Server Error: There was a problem establishing a connection to the given database URL.");
+            alternate.propagate(alternateAssembly);
+        }
+    }
 
-            String sql = "SELECT * FROM \"Actisure_Dim_Beneficiary\" " +
-                         "WHERE " + dateColumn + " >= ?::timestamp AND " + dateColumn + " < ?::timestamp";
+    private QueryParams extractAndValidateParams(MbMessageAssembly inAssembly) {
+        String fromDate = Utils.getParam(inAssembly, "fromDate", "FromDate");
+        String toDate = Utils.getParam(inAssembly, "toDate", "ToDate");
+        String status = Utils.getParam(inAssembly, "status", "Status");
 
-            // 3. Execute Query
-            Connection conn = getJDBCType4Connection("{Database_Policies}:CrmStagingDbConnectionPoolManager", JDBC_TransactionType.MB_TRANSACTION_AUTO);
+        if (isEmpty(fromDate) || isEmpty(toDate) || isEmpty(status)) {
+            return QueryParams.error(400, "Missing required query parameters: fromDate, toDate, and status are mandatory.");
+        }
 
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, startTimestampStr);
-                ps.setString(2, endTimestampStr);
+        String cleanStatus = status.trim();
+        if (!"NEW".equalsIgnoreCase(cleanStatus) && !"UPDATED".equalsIgnoreCase(cleanStatus)) {
+            return QueryParams.error(400, "Invalid status parameter. Must be either 'NEW' or 'UPDATED'.");
+        }
 
-                try (ResultSet rs = ps.executeQuery()) {
-                    MbElement root = outMessage.getRootElement();
-                    
-                    // Set HTTP Reply Header
-                    MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
-                    httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
+        return QueryParams.success(fromDate.trim(), toDate.trim(), cleanStatus);
+    }
 
-                    // Set JSON Data Array Root
-                    MbElement jsonRoot = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
-                    jsonRoot.setSpecificType(MbJSON.ARRAY);
+    private boolean executeQueryAndBuildResponse(MbMessage outMessage, QueryParams params) throws Exception {
+        String dateColumn = "NEW".equalsIgnoreCase(params.status) ? "\"_date_loaded\"" : "\"_date_changed\"";
+        String startTimestamp = formatStartTimestamp(params.fromDate);
+        String endTimestamp = formatEndTimestamp(params.toDate);
 
-                    ResultSetMetaData rsmd = rs.getMetaData();
-                    int columnCount = rsmd.getColumnCount();
-                    boolean hasRecords = false;
+        String sql = "SELECT * FROM \"Actisure_Dim_Beneficiary\" " +
+                     "WHERE " + dateColumn + " >= ?::timestamp AND " + dateColumn + " < ?::timestamp";
 
-                    SimpleDateFormat tsFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        try (Connection conn = getJDBCType4Connection(DB_POLICY, JDBC_TransactionType.MB_TRANSACTION_AUTO);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-                    while (rs.next()) {
-                        hasRecords = true;
-                        MbElement itemObj = jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
-                        itemObj.setSpecificType(MbJSON.OBJECT);
+            ps.setString(1, startTimestamp);
+            ps.setString(2, endTimestamp);
 
-                        for (int i = 1; i <= columnCount; i++) {
-                            String colName = rsmd.getColumnLabel(i);
-                            Object colValue = rs.getObject(i);
-
-                            // Omit null values to match expected structure
-                            if (colValue == null) {
-                                continue; 
-                            }
-
-                            if (colValue instanceof Number) {
-                                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
-                            } else if (colValue instanceof Boolean) {
-                                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
-                            } else if (colValue instanceof Timestamp) {
-                                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, tsFormat.format((Timestamp) colValue));
-                            } else {
-                                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue.toString());
-                            }
-                        }
-                    }
-
-                    if (hasRecords) {
-                        out.propagate(outAssembly);
-                    } else {
-                        sendErrorResponse(alternateMessage, outLocalEnv, 404, "No " + cleanStatus.toUpperCase() + " records found between " + fromDate + " and " + toDate);
-                        alternate.propagate(alternateAssembly);
-                    }
-                }
+            try (ResultSet rs = ps.executeQuery()) {
+                return buildJsonPayload(outMessage, rs);
             }
+        }
+    }
 
-        } catch (Exception e) {         
-            
-        	System.err.println("Database Error: " + e.getMessage()); 
-        	
-        	sendErrorResponse(alternateMessage, outLocalEnv, 500,  "Internal Server Error: There was a problem establishing a connection to the given database URL.");
-        	
-        	 alternate.propagate(alternateAssembly);
+    private boolean buildJsonPayload(MbMessage outMessage, ResultSet rs) throws Exception {
+        MbElement root = outMessage.getRootElement();
+        
+        MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
+        httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
+
+        MbElement jsonRoot = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
+        jsonRoot.setSpecificType(MbJSON.ARRAY);
+
+        return populateResultSetRows(rs, jsonRoot);
+    }
+
+    private boolean populateResultSetRows(ResultSet rs, MbElement jsonRoot) throws Exception {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        SimpleDateFormat tsFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
+        boolean hasRecords = false;
+
+        while (rs.next()) {
+            hasRecords = true;
+            MbElement itemObj = jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
+            itemObj.setSpecificType(MbJSON.OBJECT);
+            mapRowColumns(rs, rsmd, columnCount, itemObj, tsFormat);
+        }
+
+        return hasRecords;
+    }
+
+    private void mapRowColumns(ResultSet rs, ResultSetMetaData rsmd, int columnCount, MbElement itemObj, SimpleDateFormat tsFormat) throws Exception {
+        for (int i = 1; i <= columnCount; i++) {
+            String colName = rsmd.getColumnLabel(i);
+            Object colValue = rs.getObject(i);
+
+            if (colValue == null) continue;
+
+            if (colValue instanceof Number || colValue instanceof Boolean) {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
+            } else if (colValue instanceof Timestamp) {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, tsFormat.format((Timestamp) colValue));
+            } else {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue.toString());
+            }
         }
     }
 
@@ -144,54 +160,9 @@ public class GetActisureDimBeneficiaryCustomersProcessor extends MbJavaComputeNo
         }
     }
 
-    private String getParam(MbMessageAssembly assembly, String key) {
-        try {
-            MbElement el = assembly.getLocalEnvironment().getRootElement().getFirstElementByPath("REST/Input/Parameters/" + key);
-            if (el != null && el.getValueAsString() != null && !el.getValueAsString().trim().isEmpty()) {
-                return el.getValueAsString().trim();
-            }
-
-            el = assembly.getLocalEnvironment().getRootElement().getFirstElementByPath("HTTP/Input/QueryString/" + key);
-            if (el != null && el.getValueAsString() != null && !el.getValueAsString().trim().isEmpty()) {
-                return el.getValueAsString().trim();
-            }
-        } catch (Exception ignored) {}
-        return null;
+    private boolean isEmpty(String str) {
+        return str == null || str.trim().isEmpty();
     }
 
-    private void sendErrorResponse(MbMessage altMsg, MbMessage altEnv, int code, String msg) throws MbException {
-        MbElement localEnvRoot = altEnv.getRootElement();
-        MbElement dest = localEnvRoot.getFirstElementByPath("Destination");
-        if (dest == null) {
-            dest = localEnvRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Destination", null);
-        }
 
-        MbElement http = dest.getFirstElementByPath("HTTP");
-        if (http == null) {
-            http = dest.createElementAsLastChild(MbElement.TYPE_NAME, "HTTP", null);
-        }
-
-        MbElement replyCode = http.getFirstElementByPath("ReplyStatusCode");
-        if (replyCode == null) {
-            http.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ReplyStatusCode", code);
-        } else {
-            replyCode.setValue(code);
-        }
-
-        MbElement root = altMsg.getRootElement();
-        MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
-        httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
-
-        MbElement json = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
-        json.setSpecificType(MbJSON.OBJECT);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "success", false);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "message", msg);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "statusCode", code);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "responseCode", "ERROR");
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "status", "99");
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        sdf.setTimeZone(TimeZone.getTimeZone("Africa/Nairobi"));
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "timestamp", sdf.format(new Date()));
-    }
 }

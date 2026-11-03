@@ -2,9 +2,14 @@ package com.jubilee.datalake.processor;
 
 import com.ibm.broker.javacompute.MbJavaComputeNode;
 import com.ibm.broker.plugin.*;
+import com.jubilee.datalake.utils.Utils;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 
 public class GetActisurePolicyNotesProcessor extends MbJavaComputeNode {
+
+    private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
+    private static final String DB_POLICY = "{Database_Policies}:CrmStagingDbConnectionPoolManager";
 
     @Override
     public void evaluate(MbMessageAssembly inAssembly) throws MbException {
@@ -19,70 +24,100 @@ public class GetActisurePolicyNotesProcessor extends MbJavaComputeNode {
         MbMessageAssembly alternateAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), alternateMessage);
 
         try {
-            String policyIdStr = getPathParam(inAssembly, "policyId");
-            int policyId;
-
-            try {
-                policyId = Integer.parseInt(policyIdStr);
-            } catch (Exception e) {
-                sendErrorResponse(alternateMessage, outLocalEnv, 400, "policyId must be a valid integer policy identifier.");
+            String policyIdStr = Utils.getParam(inAssembly, "policyId", "PolicyId");
+            Integer policyId = parseAndValidatePolicyId(policyIdStr, alternateMessage, outLocalEnv);
+            if (policyId == null) {
                 alternate.propagate(alternateAssembly);
                 return;
             }
 
-            String sql = "SELECT * FROM `Actisure_Dim_Policy_Notes` WHERE `PolicyId` = ?";
-
-            Connection conn = getJDBCType4Connection("{Database_Policies}:CrmStagingDbConnectionPoolManager", JDBC_TransactionType.MB_TRANSACTION_AUTO);
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, policyId);
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    MbElement root = outMessage.getRootElement();
-                    root.createElementAsLastChild("HTTPRequestHeader").createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
-
-                    MbElement jsonRoot = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
-                    MbElement arrayRoot = jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
-                    arrayRoot.setSpecificType(MbJSON.ARRAY);
-
-                    ResultSetMetaData rsmd = rs.getMetaData();
-                    int colCount = rsmd.getColumnCount();
-
-                    while (rs.next()) {
-                        MbElement item = arrayRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
-                        item.setSpecificType(MbJSON.OBJECT);
-                        for (int i = 1; i <= colCount; i++) {
-                            Object val = rs.getObject(i);
-                            item.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, rsmd.getColumnLabel(i), val != null ? val.toString() : null);
-                        }
-                    }
-                    out.propagate(outAssembly);
-                }
-            }
+            executeAndBuildResponse(outMessage, policyId);
+            out.propagate(outAssembly);
 
         } catch (Exception e) {
-            sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: " + e.getMessage());
+            System.err.println("Database Error: " + e.getMessage());
+            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: There was a problem establishing a connection to the given database URL.");
             alternate.propagate(alternateAssembly);
         }
     }
 
-    private String getPathParam(MbMessageAssembly assembly, String key) {
+    private Integer parseAndValidatePolicyId(String policyIdStr, MbMessage altMsg, MbMessage altEnv) throws MbException {
+        if (policyIdStr == null || policyIdStr.trim().isEmpty()) {
+            Utils.sendErrorResponse(altMsg, altEnv, 400, "Missing required path parameter: policyId is mandatory.");
+            return null;
+        }
         try {
-            MbElement el = assembly.getLocalEnvironment().getRootElement().getFirstElementByPath("REST/Input/Parameters/" + key);
-            if (el != null && el.getValueAsString() != null) return el.getValueAsString().trim();
-        } catch (Exception ignored) {}
-        return null;
+            return Integer.parseInt(policyIdStr.trim());
+        } catch (NumberFormatException nfe) {
+            Utils.sendErrorResponse(altMsg, altEnv, 400, "policyId must be a valid integer policy identifier.");
+            return null;
+        }
     }
 
-    private void sendErrorResponse(MbMessage altMsg, MbMessage altEnv, int code, String msg) throws MbException {
-        MbElement dest = altEnv.getRootElement().createElementAsLastChild(MbElement.TYPE_NAME, "Destination", null)
-                                               .createElementAsLastChild(MbElement.TYPE_NAME, "HTTP", null);
-        dest.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ReplyStatusCode", code);
+    private void executeAndBuildResponse(MbMessage outMessage, int policyId) throws Exception {
+        String sql = "SELECT * FROM \"Actisure_Dim_Policy_Notes\" WHERE \"PolicyId\" = ?";
 
-        MbElement root = altMsg.getRootElement();
-        root.createElementAsLastChild("HTTPRequestHeader").createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
+        try (Connection conn = getJDBCType4Connection(DB_POLICY, JDBC_TransactionType.MB_TRANSACTION_AUTO);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        MbElement json = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "message", msg);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "statusCode", code);
+            ps.setInt(1, policyId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                buildJsonPayload(outMessage, rs);
+            }
+        }
+    }
+
+    private void buildJsonPayload(MbMessage outMessage, ResultSet rs) throws Exception {
+        MbElement root = outMessage.getRootElement();
+
+        MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
+        httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
+
+        MbElement jsonRoot = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
+        jsonRoot.setSpecificType(MbJSON.OBJECT);
+
+        jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "success", true);
+        jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "message", "Data retrieved successfully");
+        jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "statusCode", 200);
+
+        MbElement dataArray = jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME, "data", null);
+        dataArray.setSpecificType(MbJSON.ARRAY);
+
+        populateResultSetRows(rs, dataArray);
+
+        jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "responseCode", "SUCCESS");
+        jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "status", "00");
+    }
+
+    private void populateResultSetRows(ResultSet rs, MbElement dataArray) throws Exception {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        SimpleDateFormat tsFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
+
+        while (rs.next()) {
+            MbElement itemObj = dataArray.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
+            itemObj.setSpecificType(MbJSON.OBJECT);
+            mapRowColumns(rs, rsmd, columnCount, itemObj, tsFormat);
+        }
+    }
+
+    private void mapRowColumns(ResultSet rs, ResultSetMetaData rsmd, int columnCount, MbElement itemObj, SimpleDateFormat tsFormat) throws Exception {
+        for (int i = 1; i <= columnCount; i++) {
+            String colName = rsmd.getColumnLabel(i);
+            Object colValue = rs.getObject(i);
+
+            if (colValue == null) {
+                continue;
+            }
+
+            if (colValue instanceof Number || colValue instanceof Boolean) {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
+            } else if (colValue instanceof Timestamp) {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, tsFormat.format((Timestamp) colValue));
+            } else {
+                itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue.toString());
+            }
+        }
     }
 }
