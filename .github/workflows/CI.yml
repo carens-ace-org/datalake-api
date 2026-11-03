@@ -70,30 +70,25 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
-            | sh -s -- -b /usr/local/bin
-
       - name: Download Trivy HTML Template
         run: |
           curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
           test -s html.tpl || { echo "html.tpl is missing or empty"; exit 1; }
 
-      - name: Run Trivy rootfs scan (JAR/WAR/PAR/EAR aware)
+      - name: Run Trivy scan with official action (JAR/WAR/PAR/EAR aware)
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          scanners: 'vuln,misconfig,secret'
+          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
+          ignore-unfixed: false
+          skip-dirs: '.git,.metadata'
+          format: 'template'
+          template: '@html.tpl'
+          output: 'trivy-results.html'
         env:
           TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
-          TRIVY_DEBUG: "true"
-        run: |
-          trivy rootfs . \
-            --scanners vuln,misconfig,secret \
-            --severity LOW,MEDIUM,HIGH,CRITICAL \
-            --ignore-unfixed=false \
-            --skip-dirs .git,.metadata \
-            --format template \
-            --template '@html.tpl' \
-            --output trivy-results.html \
-            --debug
 
       - name: Verify Trivy report was generated and is not empty
         run: |
