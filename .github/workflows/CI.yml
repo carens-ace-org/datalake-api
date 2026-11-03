@@ -75,22 +75,23 @@ jobs:
           curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
           test -s html.tpl || { echo "html.tpl is missing or empty"; exit 1; }
 
-      - name: Run Trivy scan using container mode
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          scanners: 'vuln,misconfig,secret'
-          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
-          ignore-unfixed: false
-          skip-dirs: '.git,.metadata'
-          format: 'template'
-          template: '@html.tpl'
-          output: 'trivy-results.html'
-          # Force container execution to bypass runner binary installer failures
-          hide-progress: false
+      - name: Install Trivy natively via official script
+        run: |
+          # Use the official install script with a fixed stable version or direct package download
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.58.0
+
+      - name: Run Trivy scan directly (JAR/WAR/PAR/EAR aware)
         env:
           TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
+        run: |
+          trivy rootfs . \
+            --scanners vuln,misconfig,secret \
+            --severity LOW,MEDIUM,HIGH,CRITICAL \
+            --ignore-unfixed=false \
+            --skip-dirs .git,.metadata \
+            --format template \
+            --template '@html.tpl' \
+            --output trivy-results.html
 
       - name: Verify Trivy report was generated and is not empty
         run: |
