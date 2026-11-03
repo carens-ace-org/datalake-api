@@ -1,0 +1,166 @@
+name: ACE CI
+run-name: Run #${{ github.run_number }} - ${{ github.event.inputs.deployment_type || 'Push/PR' }}
+
+on:
+  push:
+    branches: [ "cicd", "main", "master" ]
+  pull_request:
+    branches: [ "cicd", "main", "master" ]
+  workflow_dispatch:
+    inputs:
+      deployment_type:
+        description: 'Select deployment type'
+        required: true
+        type: choice
+        options:
+          - Deploy
+          - Rollback
+        default: Deploy
+      
+      rollback_run_id:
+        description: 'GitHub Actions Run ID of the successful deployment to restore'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ace-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  initialize-action:
+    name: Initialize and Validate Action
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate Workflow Dispatch Mode
+        run: |
+          echo "Deployment Type: ${{ github.event.inputs.deployment_type || 'Deploy' }}"
+          if [ "${{ github.event.inputs.deployment_type }}" == "Rollback" ]; then
+            if [ -z "${{ github.event.inputs.rollback_run_id }}" ]; then
+              echo "Error: rollback_run_id must be provided when performing a rollback."
+              exit 1
+            fi
+            echo "Restoring artifacts from Target Run ID: ${{ github.event.inputs.rollback_run_id }}"
+          else
+            echo "Executing standard deployment flow."
+          fi
+
+  openapi-lint:
+    name: OpenAPI lint (Redocly)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Lint OpenAPI specs referenced by ACE descriptors
+        run: node scripts/lint-openapi.cjs
+
+  security-scan:
+    name: Dependency, secret, and misconfiguration scan (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin
+
+      - name: Download Trivy HTML Template
+        run: |
+          curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
+          test -s html.tpl || { echo "html.tpl is missing or empty"; exit 1; }
+
+      - name: Run Trivy rootfs scan (JAR/WAR/PAR/EAR aware)
+        env:
+          TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
+          TRIVY_DEBUG: "true"
+        run: |
+          trivy rootfs . \
+            --scanners vuln,misconfig,secret \
+            --severity LOW,MEDIUM,HIGH,CRITICAL \
+            --ignore-unfixed=false \
+            --skip-dirs .git,.metadata \
+            --format template \
+            --template '@html.tpl' \
+            --output trivy-results.html \
+            --debug
+
+      - name: Verify Trivy report was generated and is not empty
+        run: |
+          if [ ! -f trivy-results.html ]; then
+            echo "ERROR: trivy-results.html was not created."
+            exit 1
+          fi
+          SIZE=$(wc -c < trivy-results.html)
+          echo "trivy-results.html size: ${SIZE} bytes"
+          if [ "$SIZE" -lt 1000 ]; then
+            echo "WARNING: trivy-results.html is suspiciously small (${SIZE} bytes). The scan likely found nothing or failed to analyse JARs."
+          fi
+
+      - name: Upload Trivy HTML Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-html-report-${{ github.run_id }}
+          path: trivy-results.html
+          if-no-files-found: warn
+
+  ace-compile:
+    name: Native ACE build (ESQL and Java)
+    if: ${{ vars.ACE_RUNNER_ENABLED == 'true' }}
+    runs-on: [self-hosted, windows, ace13]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Compile workspace with ACE Toolkit
+        shell: powershell
+        run: |
+          if (-not (Get-Command mqsicreatebar -ErrorAction SilentlyContinue)) {
+            throw 'ACE Toolkit is not on PATH for this runner.'
+          }
+          mqsicreatebar -data "$env:GITHUB_WORKSPACE" -cleanBuild -compileOnly
+
+  sonarqube:
+    name: Java quality and cognitive complexity (SonarQube)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar-${{ hashFiles('**/sonar-project.properties') }}
+          restore-keys: ${{ runner.os }}-sonar-
+
+      - name: Run SonarQube analysis and quality gate
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >-
+            -Dsonar.projectKey=ace-enterprise-integration
+            -Dsonar.scanner.javaExePath=${{ env.JAVA_HOME }}/bin/java
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=600
