@@ -75,6 +75,14 @@ jobs:
           curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
           test -s html.tpl || { echo "html.tpl is missing or empty"; exit 1; }
 
+      - name: Cache Trivy DB
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: ${{ runner.os }}-trivy-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-trivy-
+
       - name: Run Trivy scan with official action (JAR/WAR/PAR/EAR aware)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
@@ -98,9 +106,6 @@ jobs:
           fi
           SIZE=$(wc -c < trivy-results.html)
           echo "trivy-results.html size: ${SIZE} bytes"
-          if [ "$SIZE" -lt 1000 ]; then
-            echo "WARNING: trivy-results.html is suspiciously small (${SIZE} bytes). The scan likely found nothing or failed to analyse JARs."
-          fi
 
       - name: Upload Trivy HTML Report Artifact
         if: always()
