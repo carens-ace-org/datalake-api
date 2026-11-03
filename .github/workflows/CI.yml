@@ -3,9 +3,9 @@ run-name: Run #${{ github.run_number }} - ${{ github.event.inputs.deployment_typ
 
 on:
   push:
-    branches: [ "cicd", "main", "master" ]
+    branches: [ "dev", "main", "master" ]
   pull_request:
-    branches: [ "cicd", "main", "master" ]
+    branches: [ "dev", "main", "master" ]
   workflow_dispatch:
     inputs:
       deployment_type:
