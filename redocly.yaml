@@ -1,0 +1,18 @@
+extends:
+  - recommended
+
+rules:
+  no-server-example.com: off
+  security-defined: off
+  operation-4xx-response: off
+  operation-2xx-response: off
+  info-license: off
+  operation-operationId: off
+  no-unused-components: off
+  no-invalid-media-type-examples: off
+  no-server-trailing-slash: off
+  no-empty-servers: off
+  no-empty-parameters: off
+  no-empty-request-body: off
+  no-empty-responses: off
+  no-empty-tags: off
