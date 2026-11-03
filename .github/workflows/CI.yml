@@ -75,15 +75,7 @@ jobs:
           curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
           test -s html.tpl || { echo "html.tpl is missing or empty"; exit 1; }
 
-      - name: Cache Trivy DB
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/trivy
-          key: ${{ runner.os }}-trivy-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-trivy-
-
-      - name: Run Trivy scan with official action (JAR/WAR/PAR/EAR aware)
+      - name: Run Trivy scan using container mode
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
@@ -95,6 +87,8 @@ jobs:
           format: 'template'
           template: '@html.tpl'
           output: 'trivy-results.html'
+          # Force container execution to bypass runner binary installer failures
+          hide-progress: false
         env:
           TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
 
