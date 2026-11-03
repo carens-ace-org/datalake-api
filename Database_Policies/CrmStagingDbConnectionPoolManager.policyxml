@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+    <policy longDescription="" policyName="CrmStagingDbConnectionPoolManager" policyTemplate="" policyType="JDBCProviders" shortDescription="" version="">
+        <databaseName>crmstaging</databaseName>
+        <databaseType>PostgreSQL</databaseType>
+        <databaseVersion>13.0</databaseVersion>
+        <type4DriverClassName>org.postgresql.Driver</type4DriverClassName>
+        <type4DatasourceClassName>org.postgresql.ds.PGSimpleDataSource</type4DatasourceClassName>
+        <connectionUrlFormat>jdbc:postgresql://vpce-096ce8c34e90bb985-xkki211x.vpce-svc-00c502e87fb082d9b.eu-central-1.vpce.amazonaws.com:5432/crmstaging</connectionUrlFormat>
+        <connectionUrlFormatAttr1/>
+        <connectionUrlFormatAttr2/>
+        <connectionUrlFormatAttr3/>
+        <connectionUrlFormatAttr4/>
+        <connectionUrlFormatAttr5/>
+        <serverName>vpce-096ce8c34e90bb985-xkki211x.vpce-svc-00c502e87fb082d9b.eu-central-1.vpce.amazonaws.com</serverName>
+        <portNumber>5432</portNumber>
+        <jarsURL/>
+        <databaseSchemaNames>useProvidedSchemaNames</databaseSchemaNames>
+        <description/>
+        <maxConnectionPoolSize>5</maxConnectionPoolSize>
+        <securityIdentity>crm_user</securityIdentity>
+        <environmentParms/>
+        <jdbcProviderXASupport>false</jdbcProviderXASupport>
+        <useDeployedJars>true</useDeployedJars>
+        <proxyId/>
+    </policy>
+</policies>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+    <policy longDescription="JDBC Policy Pool Manager for ISF UG UAT Oracle Database" policyName="ISFUGUATConnectionPoolManager" policyTemplate="Oracle" policyType="JDBCProviders" shortDescription="ISF UG UAT DB Connection Pool" version="1.0">
+        <databaseName>ISFUGUAT.JUBILEEDEVDBSN.JUBILEEDEVVCN.ORACLEVCN.COM</databaseName>
+        <databaseType>Oracle</databaseType>
+        <databaseVersion>19c</databaseVersion>
+        <type4DriverClassName>oracle.jdbc.OracleDriver</type4DriverClassName>
+        <type4DatasourceClassName>oracle.jdbc.xa.client.OracleXADataSource</type4DatasourceClassName>
+        <connectionUrlFormat>jdbc:oracle:thin:@//[serverName]:[portNumber]/[databaseName]</connectionUrlFormat>
+        <connectionUrlFormatAttr1/>
+        <connectionUrlFormatAttr2/>
+        <connectionUrlFormatAttr3/>
+        <connectionUrlFormatAttr4/>
+        <connectionUrlFormatAttr5/>
+        <serverName>10.190.0.106</serverName>
+        <portNumber>1521</portNumber>
+        <jarsURL/>
+        <databaseSchemaNames>useProvidedSchemaNames</databaseSchemaNames>
+        <description>ISF UG UAT Oracle Database Connection Pool Policy</description>
+        <maxConnectionPoolSize>0</maxConnectionPoolSize>
+        <securityIdentity>ISF_UG_UAT_DB_USER</securityIdentity>
+        <environmentParms/>
+        <jdbcProviderXASupport>true</jdbcProviderXASupport>
+        <useDeployedJars>true</useDeployedJars>
+        <proxyId/>
+    </policy>
+</policies>

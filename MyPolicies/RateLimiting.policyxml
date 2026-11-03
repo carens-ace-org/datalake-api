@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+    <policy longDescription="" policyName="RateLimiting" policyTemplate="" policyType="HTTPRequest" shortDescription="" version="">
+        <apiKeyLocation/>
+        <apiKeyName/>
+        <acceptSelfSignedCerts>false</acceptSelfSignedCerts>
+        <credentialName/>
+        <endpointURL/>
+        <endpointURLOverrideBehaviour>ProtocolHostAndPort</endpointURLOverrideBehaviour>
+        <oauthFlow>None</oauthFlow>
+        <oauthCredentialName/>
+        <oauthClientCredentialsLocation>header</oauthClientCredentialsLocation>
+        <oauthAuthEndpointURL/>
+        <oauthTokenEndpointURL/>
+        <oauthRefreshEndpointURL/>
+        <proxyId/>
+    </policy>
+</policies>

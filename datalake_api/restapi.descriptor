@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:restapiDescriptor xmlns="http://com.ibm.etools.mft.descriptor.base" xmlns:ns2="http://com.ibm.etools.mft.descriptor.restapi" definitionType="openapi_3" definitionFile="datalake.yaml" implementation="gen/datalake_api.msgflow" https="false" definitionWithExtRef="false" faultFormat="JSON">
+    <ns2:operations>
+        <ns2:operation name="actisureDIMBeneficiariesV2" implementation="actisureDIMBeneficiariesV2.subflow"/>
+        <ns2:operation name="actisureDIMCustomers" implementation="actisureDIMCustomers.subflow"/>
+        <ns2:operation name="actisureDIMCustomersV2" implementation="actisureDIMCustomersV2.subflow"/>
+        <ns2:operation name="actisureProviderCustomers" implementation="actisureProviderCustomers.subflow"/>
+        <ns2:operation name="crmGetMembers" implementation="crmGetMembers.subflow"/>
+        <ns2:operation name="daDIMBeneficiariesV1" implementation="daDIMBeneficiariesV1.subflow"/>
+        <ns2:operation name="daDIMCustomers" implementation="daDIMCustomers.subflow"/>
+        <ns2:operation name="daDIMCustomersV2" implementation="daDIMCustomersV2.subflow"/>
+        <ns2:operation name="dimGetCustomers" implementation="dimGetCustomers.subflow"/>
+        <ns2:operation name="getBalancesForSubBenefits" implementation="getBalancesForSubBenefits.subflow"/>
+        <ns2:operation name="getBenefitDetail" implementation="getBenefitDetail.subflow"/>
+        <ns2:operation name="getCardTypes" implementation="getCardTypes.subflow"/>
+        <ns2:operation name="getCustomers" implementation="getCustomers.subflow"/>
+        <ns2:operation name="getCustomers1" implementation="getCustomers1.subflow"/>
+        <ns2:operation name="getCustomers12" implementation="getCustomers12.subflow"/>
+        <ns2:operation name="getCustomers123" implementation="getCustomers123.subflow"/>
+        <ns2:operation name="getCustomers1234" implementation="getCustomers1234.subflow"/>
+        <ns2:operation name="getFirst-buy" implementation="getFirst_buy.subflow"/>
+        <ns2:operation name="getGetBenefitBalances" implementation="getGetBenefitBalances.subflow"/>
+        <ns2:operation name="getGetCustomerMasterData" implementation="getGetCustomerMasterData.subflow"/>
+        <ns2:operation name="getGetCustomerMasterData1" implementation="getGetCustomerMasterData1.subflow"/>
+        <ns2:operation name="getGetCustomerMasterData12" implementation="getGetCustomerMasterData12.subflow"/>
+        <ns2:operation name="getISFFactPolicyV2Customers" implementation="getISFFactPolicyV2Customers.subflow"/>
+        <ns2:operation name="getMainBenefitBalance" implementation="getMainBenefitBalance.subflow"/>
+        <ns2:operation name="getMembers" implementation="getMembers.subflow"/>
+        <ns2:operation name="getPolicyDetails" implementation="getPolicyDetails.subflow"/>
+        <ns2:operation name="getPolicyId" implementation="getPolicyId.subflow"/>
+        <ns2:operation name="getSubBenefitBalance" implementation="getSubBenefitBalance.subflow"/>
+        <ns2:operation name="getSubBenefitsBalances" implementation="getSubBenefitsBalances.subflow"/>
+        <ns2:operation name="isfDIMBeneficiariesV2" implementation="isfDIMBeneficiariesV2.subflow"/>
+        <ns2:operation name="isfDIMCustomers" implementation="isfDIMCustomers.subflow"/>
+        <ns2:operation name="isfDIMCustomersV2" implementation="isfDIMCustomersV2.subflow"/>
+    </ns2:operations>
+    <ns2:errorHandlers/>
+</ns2:restapiDescriptor>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+    <policy longDescription="" policyName="ESB_DB" policyTemplate="MySQL_57" policyType="JDBCProviders" shortDescription="" version="">
+        <databaseName>jpay</databaseName>
+        <databaseType>MySQL</databaseType>
+        <databaseVersion>5.7</databaseVersion>
+        <type4DriverClassName>com.mysql.cj.jdbc.Driver</type4DriverClassName>
+        <type4DatasourceClassName>com.mysql.cj.jdbc.MysqlXADataSource</type4DatasourceClassName>
+        <connectionUrlFormat>jdbc:mysql://[serverName]:[portNumber]/[databaseName]?user=[user]&amp;password=[password]</connectionUrlFormat>
+        <connectionUrlFormatAttr1>useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&amp;useLegacyDatetimeCode=false</connectionUrlFormatAttr1>
+        <connectionUrlFormatAttr2/>
+        <connectionUrlFormatAttr3/>
+        <connectionUrlFormatAttr4/>
+        <connectionUrlFormatAttr5/>
+        <serverName>10.186.0.29</serverName>
+        <portNumber>3306</portNumber>
+        <jarsURL/>
+        <databaseSchemaNames>useProvidedSchemaNames</databaseSchemaNames>
+        <description/>
+        <maxConnectionPoolSize>0</maxConnectionPoolSize>
+        <securityIdentity>ESB_DB_USER</securityIdentity>
+        <environmentParms/>
+        <jdbcProviderXASupport>true</jdbcProviderXASupport>
+        <useDeployedJars>true</useDeployedJars>
+        <proxyId/>
+    </policy>
+</policies>

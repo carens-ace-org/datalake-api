@@ -1,0 +1,24 @@
+{
+  "conversationId": "6f373dc8-727b-4bf4-9aa5-53c8e2d8e68c",
+  "title": "are my agents configured",
+  "requesterUsername": "envisionglobal-integration",
+  "responderUsername": "GitHub Copilot",
+  "turns": [
+    {
+      "message": {
+        "text": "are my agents configured"
+      },
+      "references": [],
+      "ignoredSkills": [],
+      "userLanguage": "en",
+      "source": "panel",
+      "model": "CAREN IBM ACE",
+      "chatMode": "Ask",
+      "needToolCallConfirmation": true,
+      "role": "user",
+      "timestamp": "2026-11-03T10:27:30.975228600Z"
+    }
+  ],
+  "creationDate": "2026-11-03T10:27:30.936865500Z",
+  "lastMessageDate": "2026-11-03T10:27:30.936865500Z"
+}

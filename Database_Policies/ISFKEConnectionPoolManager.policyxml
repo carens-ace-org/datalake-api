@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+    <policy longDescription="" policyName="ISFKEConnectionPoolManager" policyTemplate="Oracle" policyType="JDBCProviders" shortDescription="" version="">
+        <databaseName>ISF_KE</databaseName>
+        <databaseType>Oracle</databaseType>
+        <databaseVersion>19c</databaseVersion>
+        <type4DriverClassName>oracle.jdbc.OracleDriver</type4DriverClassName>
+        <type4DatasourceClassName>oracle.jdbc.xa.client.OracleXADataSource</type4DatasourceClassName>
+        <connectionUrlFormat>jdbc:oracle:thin:[user]/[password]@//[serverName]:[portNumber]/[connectionUrlFormatAttr1]</connectionUrlFormat>
+        <connectionUrlFormatAttr1>ISFUPG.JUBILEEDEVDBSN.JUBILEEDEVVCN.ORACLEVCN.COM</connectionUrlFormatAttr1>
+        <connectionUrlFormatAttr2/>
+        <connectionUrlFormatAttr3/>
+        <connectionUrlFormatAttr4/>
+        <connectionUrlFormatAttr5/>
+        <serverName>10.190.0.106</serverName>
+        <portNumber>1521</portNumber>
+        <jarsURL/>
+        <databaseSchemaNames>useProvidedSchemaNames</databaseSchemaNames>
+        <description/>
+        <maxConnectionPoolSize>0</maxConnectionPoolSize>
+        <securityIdentity>ISF_KE_DB_USER</securityIdentity>
+        <environmentParms/>
+        <jdbcProviderXASupport>true</jdbcProviderXASupport>
+        <useDeployedJars>true</useDeployedJars>
+        <proxyId/>
+    </policy>
+</policies>

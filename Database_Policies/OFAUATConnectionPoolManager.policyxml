@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+    <policy longDescription="JDBC Policy Pool Manager for OFA UAT Oracle Database" 
+            policyName="OFAUATConnectionPoolManager" 
+            policyTemplate="Oracle" 
+            policyType="JDBCProviders" 
+            shortDescription="OFA UAT DB Connection Pool" 
+            version="1.0">
+        <databaseName>JHOFAPRD</databaseName>
+        <databaseType>Oracle</databaseType>
+        <databaseVersion>19c</databaseVersion>
+        <type4DriverClassName>oracle.jdbc.OracleDriver</type4DriverClassName>
+        <type4DatasourceClassName>oracle.jdbc.xa.client.OracleXADataSource</type4DatasourceClassName>
+        <connectionUrlFormat>jdbc:oracle:thin:@//[serverName]:[portNumber]/[databaseName]</connectionUrlFormat>
+        <connectionUrlFormatAttr1/>
+        <connectionUrlFormatAttr2/>
+        <connectionUrlFormatAttr3/>
+        <connectionUrlFormatAttr4/>
+        <connectionUrlFormatAttr5/>
+        <serverName>10.190.0.45</serverName>
+        <portNumber>1521</portNumber>
+        <jarsURL>C:\ProgramData\IBM\MQSI\shared-classes</jarsURL>
+        <databaseSchemaNames>useProvidedSchemaNames</databaseSchemaNames>
+        <description>OFA UAT Oracle Database Connection Pool Policy</description>
+        <maxConnectionPoolSize>0</maxConnectionPoolSize>
+        <securityIdentity>OFA_UAT_DB_USER</securityIdentity>
+        <environmentParms/>
+        <jdbcProviderXASupport>true</jdbcProviderXASupport>
+        <useDeployedJars>true</useDeployedJars>
+        <proxyId/>
+    </policy>
+</policies>

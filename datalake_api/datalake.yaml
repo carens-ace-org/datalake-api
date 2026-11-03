@@ -1,0 +1,1289 @@
+openapi: 3.0.0
+info:
+  title: DATA LAKE
+  version: 1.0.0
+  description: Data Lake customer master, benefit balance, member, and CRM DIM/fact
+    policy endpoints across ISF, Actisure, DA, and related core systems.
+servers:
+- url: 'https://esb-gateway.com/api/v1/data-lake'
+  description: ESB Gateway Base URL
+tags:
+- name: Data Lake
+  description: Customer master data and benefit balance endpoints
+- name: Data Lake — CRM
+  description: CRM staging DIM and fact policy sync endpoints
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Obtain token via POST /api/auth/signin. Expires in 300 seconds.
+paths:
+  /getCustomerMasterData:
+    get:
+      summary: Get customer master data (v1)
+      description: Retrieve customer master data using a JSON request body.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nationalIdNumber:
+                  type: string
+                taxIdNumber:
+                  type: string
+                entityId:
+                  type: string
+                  description: Beneficiary / entity ID (@JsonProperty entityId)
+                country:
+                  type: string
+            example:
+              nationalIdNumber: CM90003100WD5J1212
+              taxIdNumber: UK001PMR
+              entityId: '12438739'
+  /v2/getCustomerMasterData:
+    get:
+      summary: Get customer master data (v2)
+      description: Retrieve customer master data by National ID, Taxpayer ID, or Entity
+        ID.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: NationalID
+        in: query
+        required: false
+        schema:
+          type: string
+          example: '28363203'
+        description: National ID number
+      - name: TaxpayerID
+        in: query
+        required: false
+        schema:
+          type: string
+        description: KRA taxpayer ID
+      - name: EntityID
+        in: query
+        required: false
+        schema:
+          type: string
+          example: '12470478'
+        description: Entity / beneficiary ID
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /v3/getCustomerMasterData:
+    get:
+      summary: Get customer master data (v3)
+      description: Retrieve customer master data by Entity ID and country (ApiResponseV3
+        wrapper).
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: EntityID
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '12470478'
+        description: Entity / beneficiary ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getBenefitBalances:
+    get:
+      summary: Get main benefit balances
+      description: Retrieve main benefit balances from the Synapse view.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: beneficiaryId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '11781043'
+        description: Beneficiary ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getBalancesForSubBenefits:
+    get:
+      operationId: getBalancesForSubBenefits
+      summary: Get sub-benefit balances
+      description: Retrieve sub-benefit balances from the Synapse view.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: beneficiaryId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '11781043'
+        description: Beneficiary ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getBenefitDetail:
+    get:
+      operationId: getBenefitDetail
+      summary: Get benefit detail
+      description: Retrieve detailed benefit information for a beneficiary, benefit,
+        and sub-benefit.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: beneficiaryId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '12135697'
+        description: Beneficiary ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      - name: benefitId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '1'
+        description: Benefit ID
+      - name: subBenefitId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '257'
+        description: Sub-benefit ID
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getMembers:
+    get:
+      operationId: getMembers
+      summary: Get members
+      description: Retrieve member records for a principal household.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: beneficiaryId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: ICIPE3009-00
+        description: Beneficiary or SMART number
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getMainBenefitBalance:
+    get:
+      operationId: getMainBenefitBalance
+      summary: Get main benefit balance
+      description: Retrieve main benefit balance via CRM staging CTE.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: beneficiaryId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '12463992'
+        description: Beneficiary ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getPolicyDetails:
+    get:
+      operationId: getPolicyDetails
+      summary: Get policy details
+      description: Retrieve policy details by policy ID and country.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: policyId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '166783'
+        description: Policy ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getSubBenefitBalance:
+    get:
+      operationId: getSubBenefitBalance    
+      summary: Get sub-benefit balance
+      description: Retrieve sub-benefit balance by beneficiary and numeric benefit
+        ID.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: beneficiaryId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '11781043'
+        description: Beneficiary ID
+      - name: benefitId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '1'
+        description: Numeric benefit ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getSubBenefitsBalances:
+    get:
+      operationId: getSubBenefitsBalances        
+      summary: Get all sub-benefit balances
+      description: Retrieve all sub-benefit balances for a beneficiary.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: beneficiaryId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '11781043'
+        description: Beneficiary ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /getCardTypes:
+    get:
+      operationId: getCardTypes       
+      summary: Get card types
+      description: Retrieve available card types for a country.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /crm/getMembers:
+    get:
+      operationId: crmGetMembers    
+      summary: Get CRM members
+      description: Retrieve member records from CRM for the latest policy.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: beneficiaryId
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '12463992'
+        description: Numeric beneficiary ID
+      - name: country
+        in: query
+        required: true
+        schema:
+          type: string
+          example: KENYA
+        description: Country code
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /dim/customers:
+    get:
+      operationId: dimGetCustomers      
+      summary: Get CRM DIM customers
+      description: Sync JHL DIM customer records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /actisure/provider/customers:
+    get:
+      operationId: actisureProviderCustomers    
+      summary: Get Actisure provider customers
+      description: Sync Actisure provider dimension records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /actisure/dim/customers:
+    get:
+      operationId: actisureDIMCustomers    
+      summary: Get Actisure DIM customers
+      description: Sync Actisure DIM customer records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /v2/actisure/dim/customers:
+    get:
+      operationId: actisureDIMCustomersV2    
+      summary: Get Actisure DIM customers (paginated v2)
+      description: Paginated Actisure DIM customers changed before or since yesterday.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        description: Zero-based page number
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          example: 10
+        description: Page size
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /v2/actisure/dim/beneficiaries:
+    get:
+      operationId: actisureDIMBeneficiariesV2    
+      summary: Get Actisure DIM beneficiaries (paginated v2)
+      description: Paginated Actisure DIM beneficiaries with policy, scheme, and product
+        details.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        description: Zero-based page number
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          example: 10
+        description: Page size
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /isf/dim/customers:
+    get:
+      operationId: isfDIMCustomers      
+      summary: Get ISF DIM customers
+      description: Sync ISF DIM customer records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /v2/isf/dim/customers:
+    get:
+      operationId: isfDIMCustomersV2    
+      summary: Get ISF DIM customers (paginated v2)
+      description: Paginated ISF DIM customers with policy and product details.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        description: Zero-based page number
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          example: 10
+        description: Page size
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /v2/isf/dim/beneficiaries:
+    get:
+      operationId: isfDIMBeneficiariesV2  
+      summary: Get ISF DIM beneficiaries (paginated v2)
+      description: Paginated ISF DIM beneficiaries with policy and product details.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        description: Zero-based page number
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          example: 10
+        description: Page size
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /da/dim/customers:
+    get:
+      operationId: daDIMCustomers    
+      summary: Get DA DIM customers
+      description: Sync DA DIM customer records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /v2/da/dim/customers:
+    get:
+      operationId: daDIMCustomersV2    
+      summary: Get DA DIM customers (paginated v2)
+      description: Paginated DA DIM customers with scheme details.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        description: Zero-based page number
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          example: 10
+        description: Page size
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /v1/da/dim/beneficiaries:
+    get:
+      operationId: daDIMBeneficiariesV1    
+      summary: Get DA DIM beneficiaries (paginated)
+      description: Paginated DA DIM beneficiaries with customer and scheme details.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        description: Zero-based page number
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          example: 10
+        description: Page size
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /actisure/factpolicy/customers:
+    get:
+      summary: Get Actisure fact policy customers
+      description: Sync Actisure fact policy records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /isf/factpolicy/customers:
+    get:
+      summary: Get ISF fact policy customers
+      description: Sync ISF fact policy records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /isf/factpolicy/v2/customers:
+    get:
+      operationId: getISFFactPolicyV2Customers    
+      summary: Get ISF fact policy customers (paginated)
+      description: Paginated ISF fact policy sync with optional product code filter.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      - name: productCode
+        in: query
+        required: false
+        schema:
+          type: string
+          example: BFP003
+        description: Optional product code filter
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 400
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /actisure/dimbeneficiary/customers:
+    get:
+      summary: Get Actisure DIM beneficiary customers
+      description: Sync Actisure DIM beneficiary records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /actisure/dimscheme/customers:
+    get:
+      summary: Get Actisure DIM scheme customers
+      description: Sync Actisure DIM scheme records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /actisure/dimschemecategory/customers:
+    get:
+      summary: Get Actisure DIM scheme category customers
+      description: Sync Actisure DIM scheme category records by date range and status.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-24'
+        description: Start date (YYYY-MM-DD)
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2025-07-25'
+        description: End date (YYYY-MM-DD)
+      - name: status
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - NEW
+          - UPDATED
+        description: CRM data lake status filter. Case-sensitive.
+        example: NEW
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /actisure/dimPolicyNotes/{policyId}:
+    get:
+      summary: Get Actisure policy notes
+      description: Retrieve Actisure policy notes by policy ID.
+      tags:
+      - Data Lake — CRM
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Actisure policy ID
+        example: 166783
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.
+  /first-buy:
+    get:
+      summary: Get first buy transaction
+      description: Retrieve the first Buy transaction for a JAML account number.
+      tags:
+      - Data Lake
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: accountNumber
+        in: query
+        required: true
+        schema:
+          type: string
+          example: TEST123
+        description: JAML account number
+      responses:
+        '200':
+          description: Request processed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized — missing or expired authentication token.
+        '500':
+          description: Internal Server Error — contact the Jubilee integration team.

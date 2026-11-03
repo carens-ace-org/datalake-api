@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+    <policy longDescription="" policyName="CrmStagingDbConnectionPoolManager" policyTemplate="" policyType="JDBCProviders" shortDescription="" version="">
+        <databaseName>crmstaging</databaseName>
+        <databaseType>PostgreSQL</databaseType>
+        <databaseVersion>13.0</databaseVersion>
+        <type4DriverClassName>org.postgresql.Driver</type4DriverClassName>
+        <type4DatasourceClassName>org.postgresql.ds.PGSimpleDataSource</type4DatasourceClassName>
+        <connectionUrlFormat>jdbc:postgresql://jubileecrmstagingdb.postgres.database.azure.com:5432/crmstaging</connectionUrlFormat>
+        <connectionUrlFormatAttr1/>
+        <connectionUrlFormatAttr2/>
+        <connectionUrlFormatAttr3/>
+        <connectionUrlFormatAttr4/>
+        <connectionUrlFormatAttr5/>
+        <serverName>jubileecrmstagingdb.postgres.database.azure.com</serverName>
+        <portNumber>5432</portNumber>
+        <jarsURL></jarsURL>
+        <databaseSchemaNames>useProvidedSchemaNames</databaseSchemaNames>
+        <description/>
+        <maxConnectionPoolSize>5</maxConnectionPoolSize>
+        <securityIdentity>crm_user</securityIdentity>
+        <environmentParms/>
+        <jdbcProviderXASupport>false</jdbcProviderXASupport>
+        <useDeployedJars>true</useDeployedJars>
+        <proxyId/>
+    </policy>
+</policies>

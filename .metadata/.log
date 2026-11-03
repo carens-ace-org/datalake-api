@@ -1,0 +1,1692 @@
+!SESSION 2026-10-07 15:29:05.996 -----------------------------------------------
+eclipse.buildId=4.31.0.I20240229-0520
+java.fullversion=17.0.19+10
+JRE 17 Windows 11 amd64-64-Bit Compressed References 20260421_1224 (JIT enabled, AOT enabled)
+OpenJ9   - c53b6b93f4
+OMR      - 6426f03fa
+JCL      - 47e62526f96 based on jdk-17.0.19+10
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide toolkit -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide toolkit -showlocation -product com.ibm.etools.msgbroker.tooling.ide -data C:\Users\Caren Kipchirchir\IBM\ACET13\datalake
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-07 15:29:11.734
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-07 15:29:11.734
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-07 15:29:11.734
+!MESSAGE Both 'com.ibm.etools.mft.esql.lang' and 'com.ibm.etools.mft.gplang' register a package for 'http://www.ibm.com/wbi/2005/gplang'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-07 15:29:11.738
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.pattern.capture.annotation' register a package for 'http://www.ibm.com/patternAnnotation/2010'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-07 15:29:11.739
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'org.eclipse.emf.ecore' register a package for 'http://www.eclipse.org/emf/2002/Ecore'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-07 15:29:11.746
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-07 15:29:11.761
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+
+!ENTRY org.eclipse.ui 2 2 2026-10-07 15:29:22.894
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.adapter.c, page: com.ibm.adapter.c.ui.preferencepage.CPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2026-10-07 15:29:22.900
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.etools.cobol.preference.ui, page: com.ibm.etools.cobol.preference.ui.preferencepage.CobolPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2026-10-07 15:29:22.900
+!MESSAGE Invalid preference category path: com.ibm.debug.breakpoints.common.pref.tracepoint (bundle: com.ibm.debug.wsa, page: com.ibm.debug.wsa.WSATracepointPreferencePage)
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-10-07 15:29:29.754
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\Caren Kipchirchir'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.jface.text 2 0 2026-10-07 15:29:30.142
+!MESSAGE Duplicate template id: 'zigen.plugin.db.template.sql.case'
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-07 15:29:35.498
+!MESSAGE 
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-07 15:29:35.500
+!MESSAGE C:\Program Files\IBM\ACE\13.0.7.2\tools>mqsifindmqpath
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-07 15:29:36.228
+!MESSAGE BIP8071I: Successful command completion. C:\Program Files\IBM\WebSphere MQ
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-07 15:29:36.228
+!MESSAGE MQ Install location found:C:/Program Files/IBM/WebSphere MQ
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-07 15:29:36.231
+!MESSAGE 
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.738
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.740
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.740
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.742
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/deepMerge
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.742
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.744
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.744
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.744
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/secrets
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/sdk
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/sdk/sdk
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedHttp
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/stackTrace
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentracing
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanHandle
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.746
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.753
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingHeaders
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.753
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.754
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.754
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.754
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/create
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.754
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/W3cTraceContext
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.754
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.754
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.754
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.760
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/parse
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.762
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.762
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.764
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/W3cTraceContext
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.764
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.764
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanBuffer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.766
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.766
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/backend_mappers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.766
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/backend_mappers/mapper
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.768
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.768
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanBuffer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.768
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/nodeJsVersionCheck
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.770
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentelemetry-instrumentations/wrap
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.771
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.771
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.771
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.771
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/cls
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.774
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.774
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.774
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.776
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.776
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentelemetry-instrumentations
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.778
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/async_local_storage_context
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.778
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/emitter-listener
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.778
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.780
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/unset
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.780
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/spanFilter
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.782
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.782
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.783
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers/ignoreEndpoints
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.783
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.786
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.786
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/clone
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.788
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/uniq
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.790
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/ensureNestedObjectExists
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.790
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/excludedFromInstrumentation
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.792
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/initializedTooLateHeuristic
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.792
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/normalizeConfig
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.793
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.793
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.793
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.793
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/yamlReader
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.793
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/propertySizes
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.793
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/requireHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.798
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/slidingWindow
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.798
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/compression
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.798
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/stackTrace
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.798
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/iitmHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.802
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/hook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.802
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/iitmHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.803
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/requireHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.804
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.804
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/applicationUnderMonitoring
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.804
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/getPreloadFlags
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.804
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.804
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/spanFilter
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.804
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/yamlReader
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.804
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-07 15:29:38.810
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-10-07 15:29:38.810
+!MESSAGE [Warning]	The environment variable INSTANA_AGENT_KEY is not set. No data will be reported to Instana.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:29:39.018
+!MESSAGE [Log]	[2026-07-10 03:29:39.006 PM] info: 	Dynamic inline compl registration: false
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:29:39.020
+!MESSAGE [Log]	[2026-07-10 03:29:39.006 PM] info: 	Dynamic CodeLens registration: false
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:29:39.050
+!MESSAGE [Log]	[2026-07-10 03:29:39.044 PM] info: 	ORAI LSP 6.2.12-ba020f0
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:29:39.097
+!MESSAGE [Log]	[2026-07-10 03:29:39.074 PM] info: 	Finished loading workspace symbols:
+
+Total No: Files: 0
+No: Files Parsed: 0
+No: of workspace symbols: 0
+No: of characters parsed: 0
+Total Duration: 2.1825999999998658
+getAllFileListDuration: 0.01389999999992142 
+readingContentFromDiskDuration: 0 
+parsingDuration: 0 
+queringFnAndClassDuration: 0
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:29:39.101
+!MESSAGE [Log]	[2026-07-10 03:29:39.094 PM] info: 	Chat session title migration started
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:29:39.104
+!MESSAGE [Log]	[2026-07-10 03:29:39.094 PM] info: 	Updating unnamed chat session titles task is completed.
+
+!ENTRY com.ibm.etools.mft.uri 0 0 2026-10-07 15:30:01.367
+!MESSAGE 
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:30:01.387
+!MESSAGE [Log]	[2026-07-10 03:30:01.349 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:30:01.388
+!MESSAGE [Log]	[2026-07-10 03:30:01.350 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-10-07 15:30:01.460
+!MESSAGE Project facet com.ibm.etools.javaee.cdi has not been defined. It is used in plugin com.ibm.etools.javaee.core.
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-10-07 15:30:01.463
+!MESSAGE Attempt to redefine project facet action "jst.ear.versionchange.ee8" in plugin org.eclipse.jst.j2ee.
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-10-07 15:30:01.464
+!MESSAGE Attempt to redefine project facet action "jst.web.versionchange.ee8" in plugin org.eclipse.jst.j2ee.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:30:02.207
+!MESSAGE [Log]	[2026-07-10 03:30:02.204 PM] info: 	Finished loading workspace symbols:
+
+Total No: Files: 97
+No: Files Parsed: 43
+No: of workspace symbols: 351
+No: of characters parsed: 424138
+Total Duration: 845.0869000000021
+getAllFileListDuration: 105.88780000000042 
+readingContentFromDiskDuration: 0.09310000001642038 
+parsingDuration: 226.70619999998962 
+queringFnAndClassDuration: 298.96899999999005
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:30:22.706
+!MESSAGE [Log]	[2026-07-10 03:30:22.698 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:30:22.708
+!MESSAGE [Log]	[2026-07-10 03:30:22.699 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-07 15:30:22.714
+!MESSAGE [Log]	[2026-07-10 03:30:22.713 PM] info: 	Finished loading workspace symbols:
+
+Total No: Files: 3
+No: Files Parsed: 0
+No: of workspace symbols: 3
+No: of characters parsed: 0
+Total Duration: 10.68579999999929
+getAllFileListDuration: 9.315499999996973 
+readingContentFromDiskDuration: 0 
+parsingDuration: 0 
+queringFnAndClassDuration: 0
+!SESSION 2026-10-14 11:13:06.313 -----------------------------------------------
+eclipse.buildId=4.31.0.I20240229-0520
+java.fullversion=17.0.19+10
+JRE 17 Windows 11 amd64-64-Bit Compressed References 20260421_1224 (JIT enabled, AOT enabled)
+OpenJ9   - c53b6b93f4
+OMR      - 6426f03fa
+JCL      - 47e62526f96 based on jdk-17.0.19+10
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide toolkit -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide toolkit -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-14 11:13:13.080
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-14 11:13:13.083
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-14 11:13:13.083
+!MESSAGE Both 'com.ibm.etools.mft.esql.lang' and 'com.ibm.etools.mft.gplang' register a package for 'http://www.ibm.com/wbi/2005/gplang'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-14 11:13:13.083
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.pattern.capture.annotation' register a package for 'http://www.ibm.com/patternAnnotation/2010'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-14 11:13:13.089
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'org.eclipse.emf.ecore' register a package for 'http://www.eclipse.org/emf/2002/Ecore'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-14 11:13:13.089
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-10-14 11:13:13.112
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+
+!ENTRY org.eclipse.ui 2 2 2026-10-14 11:13:23.951
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.adapter.c, page: com.ibm.adapter.c.ui.preferencepage.CPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2026-10-14 11:13:23.953
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.etools.cobol.preference.ui, page: com.ibm.etools.cobol.preference.ui.preferencepage.CobolPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2026-10-14 11:13:23.955
+!MESSAGE Invalid preference category path: com.ibm.debug.breakpoints.common.pref.tracepoint (bundle: com.ibm.debug.wsa, page: com.ibm.debug.wsa.WSATracepointPreferencePage)
+
+!ENTRY com.ibm.etools.mft.uri 0 0 2026-10-14 11:13:25.421
+!MESSAGE 
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-10-14 11:13:30.029
+!MESSAGE Project facet com.ibm.etools.javaee.cdi has not been defined. It is used in plugin com.ibm.etools.javaee.core.
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-10-14 11:13:30.033
+!MESSAGE Attempt to redefine project facet action "jst.ear.versionchange.ee8" in plugin org.eclipse.jst.j2ee.
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-10-14 11:13:30.033
+!MESSAGE Attempt to redefine project facet action "jst.web.versionchange.ee8" in plugin org.eclipse.jst.j2ee.
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-10-14 11:13:34.276
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\Caren Kipchirchir'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.jface.text 2 0 2026-10-14 11:13:35.055
+!MESSAGE Duplicate template id: 'zigen.plugin.db.template.sql.case'
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-14 11:13:36.021
+!MESSAGE 
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-14 11:13:36.027
+!MESSAGE C:\Program Files\IBM\ACE\13.0.7.2\tools>mqsifindmqpath
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-14 11:13:36.835
+!MESSAGE BIP8071I: Successful command completion. C:\Program Files\IBM\WebSphere MQ
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-14 11:13:36.837
+!MESSAGE MQ Install location found:C:/Program Files/IBM/WebSphere MQ
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-10-14 11:13:36.837
+!MESSAGE 
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.712
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedHttp
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.721
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.722
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/secrets
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.722
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.726
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.728
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/deepMerge
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.728
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.730
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/sdk/sdk
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.730
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.730
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.730
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/stackTrace
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.730
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.730
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/sdk
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.738
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.740
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentracing
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.740
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanHandle
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.742
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.744
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingHeaders
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.745
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.747
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.747
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.749
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/create
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.751
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/W3cTraceContext
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.751
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.753
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.755
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.757
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/parse
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.757
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.760
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.760
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/W3cTraceContext
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.762
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.764
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanBuffer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.764
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.767
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/backend_mappers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.768
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/backend_mappers/mapper
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.770
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.771
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.772
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/nodeJsVersionCheck
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.774
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentelemetry-instrumentations
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.775
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentelemetry-instrumentations/wrap
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.775
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.778
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.778
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/cls
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.780
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.780
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanBuffer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.782
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.784
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.785
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.785
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/async_local_storage_context
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.787
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/emitter-listener
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.787
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.789
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/unset
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.791
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.793
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/spanFilter
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.793
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.795
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/applicationUnderMonitoring
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.795
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.797
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.799
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/clone
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.799
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/compression
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.801
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/ensureNestedObjectExists
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.801
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/excludedFromInstrumentation
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.801
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/initializedTooLateHeuristic
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.801
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/normalizeConfig
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.801
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.807
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.807
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers/ignoreEndpoints
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.807
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/yamlReader
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.810
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/propertySizes
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.812
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/requireHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.812
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/yamlReader
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.814
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/uniq
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.814
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/stackTrace
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.816
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/iitmHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.816
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/hook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.816
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/iitmHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.816
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/requireHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.816
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.816
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.825
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/getPreloadFlags
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.825
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.825
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/spanFilter
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.825
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/slidingWindow
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.825
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-10-14 11:13:45.825
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-10-14 11:13:45.825
+!MESSAGE [Warning]	The environment variable INSTANA_AGENT_KEY is not set. No data will be reported to Instana.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-14 11:13:45.928
+!MESSAGE [Log]	[2026-14-10 11:13:45.921 AM] info: 	Dynamic inline compl registration: false
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-14 11:13:45.934
+!MESSAGE [Log]	[2026-14-10 11:13:45.921 AM] info: 	Dynamic CodeLens registration: false
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-14 11:13:45.990
+!MESSAGE [Log]	[2026-14-10 11:13:45.983 AM] info: 	ORAI LSP 6.2.12-ba020f0
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-14 11:13:46.041
+!MESSAGE [Log]	[2026-14-10 11:13:46.034 AM] info: 	Chat session title migration started
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-14 11:13:46.043
+!MESSAGE [Log]	[2026-14-10 11:13:46.035 AM] info: 	Updating unnamed chat session titles task is completed.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-10-14 11:13:46.490
+!MESSAGE [Log]	[2026-14-10 11:13:46.486 AM] info: 	Finished loading workspace symbols:
+
+Total No: Files: 144
+No: Files Parsed: 43
+No: of workspace symbols: 354
+No: of characters parsed: 424138
+Total Duration: 473.95150000000103
+getAllFileListDuration: 87.8106000000007 
+readingContentFromDiskDuration: 0.06540000000677537 
+parsingDuration: 133.15639999999985 
+queringFnAndClassDuration: 156.96280000000297
+!SESSION 2026-11-02 16:31:02.274 -----------------------------------------------
+eclipse.buildId=4.31.0.I20240229-0520
+java.fullversion=17.0.19+10
+JRE 17 Windows 11 amd64-64-Bit Compressed References 20260421_1224 (JIT enabled, AOT enabled)
+OpenJ9   - c53b6b93f4
+OMR      - 6426f03fa
+JCL      - 47e62526f96 based on jdk-17.0.19+10
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide toolkit -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide toolkit -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-11-02 16:31:12.699
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-11-02 16:31:12.701
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-11-02 16:31:12.702
+!MESSAGE Both 'com.ibm.etools.mft.esql.lang' and 'com.ibm.etools.mft.gplang' register a package for 'http://www.ibm.com/wbi/2005/gplang'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-11-02 16:31:12.703
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.pattern.capture.annotation' register a package for 'http://www.ibm.com/patternAnnotation/2010'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-11-02 16:31:12.707
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'org.eclipse.emf.ecore' register a package for 'http://www.eclipse.org/emf/2002/Ecore'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-11-02 16:31:12.709
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-11-02 16:31:12.723
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+
+!ENTRY org.eclipse.ui 2 2 2026-11-02 16:31:25.322
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.adapter.c, page: com.ibm.adapter.c.ui.preferencepage.CPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2026-11-02 16:31:25.324
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.etools.cobol.preference.ui, page: com.ibm.etools.cobol.preference.ui.preferencepage.CobolPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2026-11-02 16:31:25.325
+!MESSAGE Invalid preference category path: com.ibm.debug.breakpoints.common.pref.tracepoint (bundle: com.ibm.debug.wsa, page: com.ibm.debug.wsa.WSATracepointPreferencePage)
+
+!ENTRY com.ibm.etools.mft.uri 0 0 2026-11-02 16:31:27.107
+!MESSAGE 
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-11-02 16:31:35.524
+!MESSAGE Project facet com.ibm.etools.javaee.cdi has not been defined. It is used in plugin com.ibm.etools.javaee.core.
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-11-02 16:31:35.529
+!MESSAGE Attempt to redefine project facet action "jst.ear.versionchange.ee8" in plugin org.eclipse.jst.j2ee.
+
+!ENTRY org.eclipse.wst.common.project.facet.core 4 0 2026-11-02 16:31:35.532
+!MESSAGE Attempt to redefine project facet action "jst.web.versionchange.ee8" in plugin org.eclipse.jst.j2ee.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2026-11-02 16:31:43.323
+!MESSAGE [Info] Starting language server with binary lsp agent.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2026-11-02 16:31:43.326
+!MESSAGE [Info] Found native binary in fragment bundle: com.microsoft.copilot.eclipse.core.agent.win32
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2026-11-02 16:31:43.389
+!MESSAGE [Info] Binary agent started successfully.
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-11-02 16:31:43.630
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\Caren Kipchirchir'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.jface.text 2 0 2026-11-02 16:31:44.165
+!MESSAGE Duplicate template id: 'zigen.plugin.db.template.sql.case'
+
+!ENTRY org.eclipse.wildwebdeveloper.embedder.node 4 0 2026-11-02 16:31:44.549
+!MESSAGE failed to create directory C:\Program Files\IBM\ACE\13.0.7.2\tools\.node\node-v18.18.2-win-x64
+!STACK 0
+java.io.IOException: failed to create directory C:\Program Files\IBM\ACE\13.0.7.2\tools\.node\node-v18.18.2-win-x64
+	at org.eclipse.wildwebdeveloper.embedder.node.CompressUtils.extractArchive(CompressUtils.java:81)
+	at org.eclipse.wildwebdeveloper.embedder.node.CompressUtils.unarchive(CompressUtils.java:52)
+	at org.eclipse.wildwebdeveloper.embedder.node.NodeJSManager.getNodeJsLocation(NodeJSManager.java:84)
+	at org.sonarlint.eclipse.core.internal.nodejs.EmbedderNodeJsUtils.getNodeJsPath(EmbedderNodeJsUtils.java:37)
+	at org.sonarlint.eclipse.core.internal.nodejs.NodeJsService.getNodeJsPath(NodeJsService.java:59)
+	at org.sonarlint.eclipse.core.internal.backend.SonarLintBackendService$1.run(SonarLintBackendService.java:216)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-11-02 16:31:44.880
+!MESSAGE 
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-11-02 16:31:44.882
+!MESSAGE C:\Program Files\IBM\ACE\13.0.7.2\tools>mqsifindmqpath
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-11-02 16:31:45.822
+!MESSAGE BIP8071I: Successful command completion. C:\Program Files\IBM\WebSphere MQ
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-11-02 16:31:45.824
+!MESSAGE MQ Install location found:C:/Program Files/IBM/WebSphere MQ
+
+!ENTRY com.ibm.mq.runtime 1 0 2026-11-02 16:31:45.826
+!MESSAGE 
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:47.095
+!MESSAGE [Info]	[lsp] GitHub Copilot Language Server 1.527.0 initialized
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:47.411
+!MESSAGE [Info]	[certificates] Removed 8 expired certificates
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:47.411
+!MESSAGE [Info]	[UndiciFetcher] Root certificate set changed; resetting Undici dispatchers. { certificateCount: 187 }
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:47.414
+!MESSAGE [Info]	[default] Policy watcher started for GitHub Copilot Plugin
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:47.416
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:47.416
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:47.454
+!MESSAGE [Info]	[UndiciFetcher] HTTP settings changed; resetting Undici dispatchers. {
+  proxy: 'none',
+  noProxyCount: 0,
+  proxyStrictSSL: true,
+  hasProxyAuthorization: false,
+  hasProxyKerberosServicePrincipal: false
+}
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:47.466
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:48.378
+!MESSAGE [Info]	[UndiciFetcher] Root certificate set changed; resetting Undici dispatchers. { certificateCount: 187 }
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:48.394
+!MESSAGE [Info]	[GithubAvailableEmbeddingTypes] Got embeddings. Primary: metis-1024-I16-Binary. Deprecated: 
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.400
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedHttp
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.401
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.403
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.403
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.403
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.403
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/secrets
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.409
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/sdk
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.411
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/sdk/sdk
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.411
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/deepMerge
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.413
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.413
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/stackTrace
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.415
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.417
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.417
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.420
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentracing
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.422
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.424
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingHeaders
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.426
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.427
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.429
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.431
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.433
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/create
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.435
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/W3cTraceContext
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.437
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.437
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.439
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.441
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/parse
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.442
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanHandle
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.444
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.444
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/w3c_trace_context/W3cTraceContext
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.444
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.444
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanBuffer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.449
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.450
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/backend_mappers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.452
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/backend_mappers/mapper
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.454
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.454
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.456
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/nodeJsVersionCheck
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.458
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentelemetry-instrumentations
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.458
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/opentelemetry-instrumentations/wrap
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.460
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.460
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.460
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/cls
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.460
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/leftPad
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.460
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/spanBuffer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.460
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/tracingUtil
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.466
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/constants
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.466
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.466
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/async_local_storage_context
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.466
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/emitter-listener
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.466
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.466
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/clsHooked/unset
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.466
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/metrics
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.466
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/spanFilter
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.475
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.475
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/applicationUnderMonitoring
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.476
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/uninstrumentedFs
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.476
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.476
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/clone
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.476
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/compression
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.476
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/ensureNestedObjectExists
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.476
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/excludedFromInstrumentation
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.476
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/initializedTooLateHeuristic
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.483
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/iitmHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.487
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/supportedVersion
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.489
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.491
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers/ignoreEndpoints
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.491
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/yamlReader
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.494
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/propertySizes
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.494
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/requireHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.494
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/slidingWindow
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.494
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/uniq
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.494
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/stackTrace
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.499
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/iitmHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.500
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/hook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.500
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/normalizeConfig
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.502
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/requireHook
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.502
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.504
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/esm
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.504
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/getPreloadFlags
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.504
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/configNormalizers
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.506
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/spanFilter
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.507
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util/yamlReader
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.507
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/tracing/shimmer
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-02 16:31:48.509
+!MESSAGE [Error]	/workspace/app/orai-lsp/node_modules/.pnpm/@instana+core@4.11.1/node_modules/@instana/core/src/util
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-11-02 16:31:48.509
+!MESSAGE [Warning]	The environment variable INSTANA_AGENT_KEY is not set. No data will be reported to Instana.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:48.693
+!MESSAGE [Log]	[2026-02-11 04:31:48.677 PM] info: 	Dynamic inline compl registration: false
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:48.695
+!MESSAGE [Log]	[2026-02-11 04:31:48.677 PM] info: 	Dynamic CodeLens registration: false
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:48.721
+!MESSAGE [Log]	[2026-02-11 04:31:48.714 PM] info: 	ORAI LSP 6.2.12-ba020f0
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:48.789
+!MESSAGE [Log]	[2026-02-11 04:31:48.782 PM] info: 	Chat session title migration started
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:48.789
+!MESSAGE [Log]	[2026-02-11 04:31:48.783 PM] info: 	Updating unnamed chat session titles task is completed.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.431
+!MESSAGE [Info]	[AutoModelService] Auto model cache cleared due to token update
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.435
+!MESSAGE [Info]	[CopilotMCP] MCP state changed from false to true
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.443
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.445
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.447
+!MESSAGE [Info]	[BackgroundAgent] GitHub identity changed, clearing cached sessions {
+  hadPrevious: false,
+  hasCurrent: true,
+  cachedSessionCount: 0,
+  remoteDelegateCount: 0
+}
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.447
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.450
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.450
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:31:49.678
+!MESSAGE [Log]	[2026-02-11 04:31:49.674 PM] info: 	Finished loading workspace symbols:
+
+Total No: Files: 144
+No: Files Parsed: 43
+No: of workspace symbols: 354
+No: of characters parsed: 424138
+Total Duration: 937.3361
+getAllFileListDuration: 215.96180000000004 
+readingContentFromDiskDuration: 0.08630000000039217 
+parsingDuration: 219.61460000000034 
+queringFnAndClassDuration: 275.52949999999873
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:25.124
+!MESSAGE [Log]	[2026-02-11 04:32:25.116 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:25.148
+!MESSAGE [Log]	[2026-02-11 04:32:25.117 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:25.490
+!MESSAGE [Log]	[2026-02-11 04:32:25.484 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:25.491
+!MESSAGE [Log]	[2026-02-11 04:32:25.485 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:25.859
+!MESSAGE [Log]	[2026-02-11 04:32:25.854 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:25.861
+!MESSAGE [Log]	[2026-02-11 04:32:25.855 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:49.378
+!MESSAGE [Log]	[2026-02-11 04:32:49.373 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:49.380
+!MESSAGE [Log]	[2026-02-11 04:32:49.374 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:50.193
+!MESSAGE [Log]	[2026-02-11 04:32:50.189 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:50.194
+!MESSAGE [Log]	[2026-02-11 04:32:50.189 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:50.491
+!MESSAGE [Log]	[2026-02-11 04:32:50.486 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:50.492
+!MESSAGE [Log]	[2026-02-11 04:32:50.487 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:50.765
+!MESSAGE [Log]	[2026-02-11 04:32:50.760 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:50.767
+!MESSAGE [Log]	[2026-02-11 04:32:50.761 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:51.041
+!MESSAGE [Log]	[2026-02-11 04:32:51.036 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:32:51.042
+!MESSAGE [Log]	[2026-02-11 04:32:51.036 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:34:17.130
+!MESSAGE [Log]	[2026-02-11 04:34:17.119 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:34:17.132
+!MESSAGE [Log]	[2026-02-11 04:34:17.120 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:34:17.754
+!MESSAGE [Log]	[2026-02-11 04:34:17.752 PM] info: 	Finished loading workspace symbols:
+
+Total No: Files: 92
+No: Files Parsed: 43
+No: of workspace symbols: 349
+No: of characters parsed: 418565
+Total Duration: 629.0340999999898
+getAllFileListDuration: 107.789300000004 
+readingContentFromDiskDuration: 0.04609999997774139 
+parsingDuration: 135.26169999997364 
+queringFnAndClassDuration: 209.4196000000229
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:45:50.153
+!MESSAGE [Log]	[2026-02-11 04:45:50.065 PM] info: 	Workspace folder change event received.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:45:50.155
+!MESSAGE [Log]	[2026-02-11 04:45:50.069 PM] info: 	----existing url value event value : [object Object]-----
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 16:45:50.170
+!MESSAGE [Log]	[2026-02-11 04:45:50.168 PM] info: 	Finished loading workspace symbols:
+
+Total No: Files: 3
+No: Files Parsed: 0
+No: of workspace symbols: 3
+No: of characters parsed: 0
+Total Duration: 49.757800000021234
+getAllFileListDuration: 48.41980000003241 
+readingContentFromDiskDuration: 0 
+parsingDuration: 0 
+queringFnAndClassDuration: 0
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-11-02 16:46:05.311
+!MESSAGE A URL object was not found for the given URI model/patterns.xsd from com.ibm.etools.mft.pattern.capture.builderxmlmodel
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-11-02 16:46:05.364
+!MESSAGE The given URI https://jakarta.ee/xml/ns/jakartaee/application-client_9.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-11-02 16:46:05.367
+!MESSAGE The given URI https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-11-02 16:46:05.368
+!MESSAGE The given URI https://jakarta.ee/xml/ns/jakartaee/beans_3_0.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-11-02 16:46:05.369
+!MESSAGE The given URI https://jakarta.ee/xml/ns/jaxb/bindingschema_3_0.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-11-02 16:46:05.379
+!MESSAGE The given URI https://jakarta.ee/xml/ns/validation/validation-configuration-3.0.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-11-02 16:46:05.386
+!MESSAGE The given URI http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_1.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-11-02 16:56:37.241
+!MESSAGE Javadoc unavailable. Failed to obtain it.
+!STACK 0
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:386)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at org.eclipse.lsp4e.jdt.LSJavaHoverProvider.getHoverInfo2(LSJavaHoverProvider.java:65)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:163)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:130)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:89)
+	at org.eclipse.jface.text.TextViewerHoverManager$1.run(TextViewerHoverManager.java:155)
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:07:32.744
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:07:32.745
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:07:32.745
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-11-02 17:07:32.746
+!MESSAGE [Warning]	[relatedFiles] unknown language java
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:07:34.495
+!MESSAGE [Info]	[fetchCompletions] Request 259c592f-ec5b-4fd0-a9dd-ec7d23b3095f at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 1801.19150000019ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:07:35.160
+!MESSAGE [Info]	[fetchCompletions] Request 1a2200d4-3e2d-425f-b9c9-933b73590905 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 609.3533000000753ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:07:39.546
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:08:38.827
+!MESSAGE [Info]	[fetchCompletions] Request 72ab2d18-70dd-4b22-b0d3-f58d64e922a3 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 571.1850000000559ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:08:39.574
+!MESSAGE [Info]	[fetchCompletions] Request 7b8d2f4a-ce22-4c39-9b10-0e36b8fed019 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 464.26450000004843ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:08:41.312
+!MESSAGE [Info]	[code-referencing] Calling Match
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:08:43.269
+!MESSAGE [Info]	[code-referencing] No match found
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:08:44.084
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:08:53.608
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:08:59.826
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:09:07.213
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:10:49.173
+!MESSAGE [Info]	[fetchCompletions] Request 422444f5-aba1-4d19-9782-6b8e64e593f2 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 487.3788000000641ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:10:49.697
+!MESSAGE [Info]	[fetchCompletions] Request afcff656-f02f-4c85-b54e-b3f1df19e54b at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 468.75659999996424ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:10:51.318
+!MESSAGE [Info]	[fetchCompletions] Request f3d8215d-7eea-4331-924b-9f8e764401a2 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 560.8708000001498ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:10:55.758
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:14.047
+!MESSAGE [Info]	[fetchCompletions] Request eb6df77e-d7ca-4641-8420-e14dfd458f28 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 535.5919000003487ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:15.215
+!MESSAGE [Info]	[fetchCompletions] Request c6bf5188-5aad-4cc4-abdd-8effd74726e0 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 412.4612000002526ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:17.291
+!MESSAGE [Info]	[fetchCompletions] Request 55c329b3-4579-4260-8819-ee87a1483524 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 447.0441999998875ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:21.009
+!MESSAGE [Info]	[fetchCompletions] Request eeb5c079-d345-4bef-b5a3-822671894484 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 514.406799999997ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:22.086
+!MESSAGE [Info]	[fetchCompletions] Request 37127920-6af5-4f38-8b07-8e0c851af454 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 508.8077000002377ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:22.566
+!MESSAGE [Info]	[fetchCompletions] Request b5fda4b7-425d-4e5a-9ddf-38370ff1726a at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 441.77810000022873ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:27.115
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:33.362
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:35.305
+!MESSAGE [Info]	[fetchCompletions] Request 1eb6eedd-49e2-4b14-a355-0637e176299d at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 414.37229999992996ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:35.907
+!MESSAGE [Info]	[fetchCompletions] Request 96559105-b447-4fc3-a48c-728884ada802 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 490.0381000000052ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:11:40.419
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:07.587
+!MESSAGE [Info]	[fetchCompletions] Request 36489f75-a05d-408f-93cf-b2170b037cd9 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 496.75230000028387ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:08.168
+!MESSAGE [Info]	[fetchCompletions] Request 3183fb80-ac39-480d-8943-0e830742a13f at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 524.7450999999419ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:09.599
+!MESSAGE [Info]	[fetchCompletions] Request 3905e46d-1e49-47ab-a1d9-87b2bf728c4c at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 607.0472999997437ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:13.977
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:30.542
+!MESSAGE [Info]	[fetchCompletions] Request 11986484-f0c8-464a-ae5f-b7d40ec539b6 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 643.4799999999814ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:34.901
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:36.732
+!MESSAGE [Info]	[fetchCompletions] Request c63a73b4-0526-4036-aadd-ea169702c8d7 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 574.2309999996796ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:37.253
+!MESSAGE [Info]	[fetchCompletions] Request 57da178a-d5c9-4815-b2de-8301aba24e89 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 481.14060000004247ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:40.631
+!MESSAGE [Info]	[fetchCompletions] Request 114b9b5c-17cd-46e4-bf1e-6bac4d7fb6f4 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 591.0381000000052ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:41.995
+!MESSAGE [Info]	[fetchCompletions] Request ef6aa181-2b08-40fc-b567-bdf95ffb2102 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 596.4422999997623ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:42.684
+!MESSAGE [Info]	[fetchCompletions] Request 3de1305d-ad39-4577-8157-d8371dbd211f at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 641.716099999845ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:43.270
+!MESSAGE [Info]	[fetchCompletions] Request f5c03f0b-dabf-4fef-8587-429bb9bbf31a at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 455.71480000019073ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:12:53.988
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:06.422
+!MESSAGE [Info]	[fetchCompletions] Request c05ef521-58f7-44a3-8d6b-2974b5111d6c at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 618.0205000001006ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:13.076
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:19.225
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:20.972
+!MESSAGE [Info]	[fetchCompletions] Request a1f01516-f8f6-4f63-af7d-2cd5afed12d9 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 1090.3234999999404ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:22.407
+!MESSAGE [Info]	[fetchCompletions] Request 9d9ef843-eae9-4092-b43d-30d9c7b429e5 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 648.2520999996923ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:25.485
+!MESSAGE [Info]	[fetchCompletions] Request 239fdcd6-3475-4cea-b3d2-b6e673a659fa at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 644.906500000041ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:27.267
+!MESSAGE [Info]	[fetchCompletions] Request a5b5f23a-4b2d-49a2-88b4-752ebab52c7c at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 501.23629999998957ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:28.103
+!MESSAGE [Info]	[fetchCompletions] Request 2b2e3f9e-3f00-473d-873e-bcd3a41849c5 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 732.5216000000946ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:28.869
+!MESSAGE [Info]	[fetchCompletions] Request 59dc478f-ed8b-4171-a4b3-cfb62820e65c at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 673.5763000003062ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:33.190
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:38.798
+!MESSAGE [Info]	[fetchCompletions] Request 63d7f806-9813-442d-b6b8-7dfdc5f723d3 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 395.44760000007227ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:39.322
+!MESSAGE [Info]	[fetchCompletions] Request 3745138e-6622-410f-a9bb-5cc5921f8900 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 395.79570000013337ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:43.905
+!MESSAGE [Info]	[fetchCompletions] Request 9eda9ca7-f279-42ff-b8d1-883c7c30bec6 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 550.2587000001222ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:47.001
+!MESSAGE [Info]	[fetchCompletions] Request f9cd9da9-c9f9-4b35-a6e5-2149791cbd11 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 654.102300000377ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:13:51.345
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:14:08.143
+!MESSAGE [Info]	[fetchCompletions] Request b53b6363-ea14-46c0-8c60-c9cb1293f2b3 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 617.7171999998391ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:14:08.754
+!MESSAGE [Info]	[fetchCompletions] Request db1fb78d-eb00-4075-9b1b-8d2b25781153 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 546.8654000000097ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:14:25.825
+!MESSAGE [Info]	[fetchCompletions] Request 2511c127-c5cb-4026-b6e2-cb16e8729910 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 531.5740000000224ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-02 17:14:30.287
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:25:45.169
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:25:49.392
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:26:20.916
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:26:22.051
+!MESSAGE [Info]	[AuthManager] resolveSession: persisted store resolved a session
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:27:31.396
+!MESSAGE [Info]	[fetcher] Request to <https://api.individual.githubcopilot.com/agents> failed, attempting fallback. Error [TypeError]: fetch failed
+    at Object.processResponse (C:\snapshot\copilot-language-server-internal\dist\main.js:302:32970)
+    at C:\snapshot\copilot-language-server-internal\dist\main.js:302:39314
+    at node:internal/process/task_queues:149:7
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at AsyncResource.runMicrotask (node:internal/process/task_queues:146:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  code: 'ETIMEDOUT',
+  syscall: undefined,
+  errno: undefined,
+  [cause]: AggregateError [ETIMEDOUT]: 
+      at internalConnectMultiple (node:net:1135:18)
+      at afterConnectMultiple (node:net:1716:7) {
+    code: 'ETIMEDOUT',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-11-03 13:27:31.727
+!MESSAGE [Error]	[lsp] Request conversation/create: FetchError
+    at fetch (C:\snapshot\copilot-language-server-internal\dist\main.js:1512:30579)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async cachingFetch (C:\snapshot\copilot-language-server-internal\dist\main.js:1512:32661)
+    at async boe.fetch (C:\snapshot\copilot-language-server-internal\dist\main.js:4237:44339)
+    at async oUe.fetch (C:\snapshot\copilot-language-server-internal\dist\main.js:4274:66714)
+    at async fetchCapiUrl (C:\snapshot\copilot-language-server-internal\dist\main.js:1758:9640)
+    at async aXe.fetchAgents (C:\snapshot\copilot-language-server-internal\dist\main.js:2817:22276)
+    at async aXe.agents (C:\snapshot\copilot-language-server-internal\dist\main.js:2817:22014)
+    at async getAgents (C:\snapshot\copilot-language-server-internal\dist\main.js:2858:4224)
+    at async rM.createProcessor (C:\snapshot\copilot-language-server-internal\dist\main.js:4237:94759) {
+  type: 'system',
+  _name: 'FetchError',
+  code: 'ETIMEDOUT',
+  errno: undefined,
+  erroredSysCall: undefined
+}
+
+!ENTRY com.microsoft.copilot.eclipse 4 0 2026-11-03 13:27:31.738
+!MESSAGE [Error] Error creating new conversation with exception: 
+!STACK 0
+java.util.concurrent.CompletionException: org.eclipse.lsp4j.jsonrpc.ResponseErrorException: Request conversation/create failed with message: 
+	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(CompletableFuture.java:368)
+	at java.base/java.util.concurrent.CompletableFuture.completeRelay(CompletableFuture.java:377)
+	at java.base/java.util.concurrent.CompletableFuture$UniRelay.tryFire(CompletableFuture.java:1097)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2162)
+	at org.eclipse.lsp4j.jsonrpc.RemoteEndpoint.handleResponse(RemoteEndpoint.java:220)
+	at org.eclipse.lsp4j.jsonrpc.RemoteEndpoint.consume(RemoteEndpoint.java:204)
+	at org.eclipse.lsp4e.LanguageServerWrapper.lambda$3(LanguageServerWrapper.java:310)
+	at org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer.handleMessage(StreamMessageProducer.java:185)
+	at org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer.listen(StreamMessageProducer.java:97)
+	at org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor.run(ConcurrentMessageProcessor.java:114)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:854)
+Caused by: org.eclipse.lsp4j.jsonrpc.ResponseErrorException: Request conversation/create failed with message: 
+	... 11 more
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:27:32.036
+!MESSAGE [Info]	[fetcher] Request to <https://telemetry.individual.githubcopilot.com/telemetry> failed, attempting fallback. Error [TypeError]: fetch failed
+    at Object.processResponse (C:\snapshot\copilot-language-server-internal\dist\main.js:302:32970)
+    at C:\snapshot\copilot-language-server-internal\dist\main.js:302:39314
+    at node:internal/process/task_queues:149:7
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at AsyncResource.runMicrotask (node:internal/process/task_queues:146:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  code: 'ETIMEDOUT',
+  syscall: undefined,
+  errno: undefined,
+  [cause]: AggregateError [ETIMEDOUT]: 
+      at internalConnectMultiple (node:net:1135:18)
+      at afterConnectMultiple (node:net:1716:7) {
+    code: 'ETIMEDOUT',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:27:32.616
+!MESSAGE [Info]	[fetcher] Request to <https://telemetry.individual.githubcopilot.com/telemetry> failed, attempting fallback. Error [TypeError]: fetch failed
+    at Object.processResponse (C:\snapshot\copilot-language-server-internal\dist\main.js:302:32970)
+    at C:\snapshot\copilot-language-server-internal\dist\main.js:302:39314
+    at node:internal/process/task_queues:149:7
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at AsyncResource.runMicrotask (node:internal/process/task_queues:146:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  code: 'ETIMEDOUT',
+  syscall: undefined,
+  errno: undefined,
+  [cause]: AggregateError [ETIMEDOUT]: 
+      at internalConnectMultiple (node:net:1135:18)
+      at afterConnectMultiple (node:net:1716:7) {
+    code: 'ETIMEDOUT',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:27:48.218
+!MESSAGE [Info]	[fetcher] Request to <https://telemetry.individual.githubcopilot.com/telemetry> failed, attempting fallback. Error [TypeError]: fetch failed
+    at Object.processResponse (C:\snapshot\copilot-language-server-internal\dist\main.js:302:32970)
+    at C:\snapshot\copilot-language-server-internal\dist\main.js:302:39314
+    at node:internal/process/task_queues:149:7
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at AsyncResource.runMicrotask (node:internal/process/task_queues:146:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  code: 'ETIMEDOUT',
+  syscall: undefined,
+  errno: undefined,
+  [cause]: AggregateError [ETIMEDOUT]: 
+      at internalConnectMultiple (node:net:1135:18)
+      at afterConnectMultiple (node:net:1716:7) {
+    code: 'ETIMEDOUT',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:27:48.218
+!MESSAGE [Info]	[fetcher] Request to <https://telemetry.individual.githubcopilot.com/telemetry> failed, attempting fallback. Error [TypeError]: fetch failed
+    at Object.processResponse (C:\snapshot\copilot-language-server-internal\dist\main.js:302:32970)
+    at C:\snapshot\copilot-language-server-internal\dist\main.js:302:39314
+    at node:internal/process/task_queues:149:7
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at AsyncResource.runMicrotask (node:internal/process/task_queues:146:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  code: 'ETIMEDOUT',
+  syscall: undefined,
+  errno: undefined,
+  [cause]: AggregateError [ETIMEDOUT]: 
+      at internalConnectMultiple (node:net:1135:18)
+      at afterConnectMultiple (node:net:1716:7) {
+    code: 'ETIMEDOUT',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:27:48.253
+!MESSAGE [Info]	[fetcher] Request to <https://dc.services.visualstudio.com/v2/track> failed, attempting fallback. Error [TypeError]: fetch failed
+    at Object.processResponse (C:\snapshot\copilot-language-server-internal\dist\main.js:302:32970)
+    at C:\snapshot\copilot-language-server-internal\dist\main.js:302:39314
+    at node:internal/process/task_queues:149:7
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at AsyncResource.runMicrotask (node:internal/process/task_queues:146:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  code: 'ECONNRESET',
+  syscall: 'read',
+  errno: -4077,
+  [cause]: Error: read ECONNRESET
+      at TLSWrap.onStreamRead (node:internal/stream_base_commons:216:20) {
+    errno: -4077,
+    code: 'ECONNRESET',
+    syscall: 'read'
+  }
+}
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:27:48.967
+!MESSAGE [Info]	[fetcher] UndiciFetcher failed; switching to HelixFetcher for subsequent requests.
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-11-03 13:27:48.969
+!MESSAGE [Info]	[fetcher] Fallback fetch for <https://dc.services.visualstudio.com/v2/track> succeeded.
