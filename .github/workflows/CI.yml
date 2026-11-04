@@ -1,5 +1,5 @@
 name: ACE CI
-run-name: Run #${{ github.run_number }} - ${{ github.event.inputs.deployment_type || 'Push/PR' }}
+run-name: ${{ github.run_number }}: ${{ github.event.head_commit.message || github.event.pull_request.title || github.event.inputs.deployment_type || 'Pipeline Run' }}
 
 on:
   push:
