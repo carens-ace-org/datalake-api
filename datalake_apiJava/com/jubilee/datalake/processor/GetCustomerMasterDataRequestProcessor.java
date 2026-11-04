@@ -12,6 +12,7 @@ import java.util.Date;
 public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
 
     private static final String DB_POLICY = "{Database_Policies}:CrmStagingDbConnectionPoolManager";
+    
     private static final String BASE_SQL = 
         "SELECT " +
         "    \"CUSTOMER_ID\" AS \"beneficiaryId\", " +
@@ -97,7 +98,6 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
     }
 
     private SearchCriteria extractSearchCriteria(MbMessageAssembly inAssembly) {
-        // Fully leverage Utils.getParam for robust parameter retrieval across REST/QueryString
         String nationalId = Utils.getParam(inAssembly, "nationalIdNumber", "NationalIdNumber");
         String taxId = Utils.getParam(inAssembly, "taxIdNumber", "TaxIdNumber");
         String entityId = Utils.getParam(inAssembly, "entityId", "EntityID", "entityid");
@@ -111,38 +111,43 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
         try (Connection conn = getJDBCType4Connection(DB_POLICY, JDBC_TransactionType.MB_TRANSACTION_AUTO);
              PreparedStatement ps = conn.prepareStatement(ctx.sql)) {
 
-            for (int i = 0; i < ctx.params.size(); i++) {
-                ps.setString(i + 1, ctx.params.get(i));
-            }
+            bindParameters(ps, ctx.params);
 
             try (ResultSet rs = ps.executeQuery()) {
                 ResultSetMetaData rsmd = rs.getMetaData();
-                int columnCount = rsmd.getColumnCount();
-
                 while (rs.next()) {
-                    RecordData record = new RecordData();
-                    for (int i = 1; i <= columnCount; i++) {
-                        String colName = rsmd.getColumnLabel(i);
-                        Object colValue = rs.getObject(i);
-                        if (colValue != null) {
-                            record.columns.put(colName, colValue);
-                        }
-                    }
-                    results.add(record);
+                    results.add(extractRecordData(rs, rsmd));
                 }
             }
         }
         return results;
     }
 
+    private void bindParameters(PreparedStatement ps, List<String> params) throws SQLException {
+        for (int i = 0; i < params.size(); i++) {
+            ps.setString(i + 1, params.get(i));
+        }
+    }
+
+    private RecordData extractRecordData(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
+        RecordData record = new RecordData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            String colName = rsmd.getColumnLabel(i);
+            Object colValue = rs.getObject(i);
+            if (colValue != null) {
+                record.columns.put(colName, colValue);
+            }
+        }
+        return record;
+    }
+
     private QueryContext buildQueryContext(SearchCriteria sc) {
         StringBuilder sql = new StringBuilder(BASE_SQL);
         List<String> params = new ArrayList<>();
-
         appendCondition(sc.nationalId, "NATIONAL_ID", sql, params);
         appendCondition(sc.taxId, "TAX_NUMBER", sql, params);
         appendCondition(sc.entityId, "CUSTOMER_SYS_ID_ACTISURE", sql, params);
-
         return new QueryContext(sql.toString(), params);
     }
 
@@ -155,7 +160,6 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
 
     private void buildJsonPayload(MbMessage outMessage, List<RecordData> records) throws Exception {
         MbElement root = outMessage.getRootElement();
-
         MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
         httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
 
@@ -176,21 +180,21 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
         for (RecordData record : records) {
             MbElement itemObj = detailsArray.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
             itemObj.setSpecificType(MbJSON.OBJECT);
-
             for (Map.Entry<String, Object> entry : record.columns.entrySet()) {
-                String colName = entry.getKey();
-                Object colValue = entry.getValue();
-
-                if (colValue instanceof Number || colValue instanceof Boolean) {
-                    itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
-                } else if (colValue instanceof Timestamp) {
-                    itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, isoFormat.format((Timestamp) colValue));
-                } else if (colValue instanceof java.sql.Date) {
-                    itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, isoFormat.format(new Date(((java.sql.Date) colValue).getTime())));
-                } else {
-                    itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue.toString());
-                }
+                appendColumnElement(itemObj, entry.getKey(), entry.getValue(), isoFormat);
             }
+        }
+    }
+
+    private void appendColumnElement(MbElement itemObj, String colName, Object colValue, SimpleDateFormat isoFormat) throws MbException {
+        if (colValue instanceof Number || colValue instanceof Boolean) {
+            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
+        } else if (colValue instanceof Timestamp) {
+            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, isoFormat.format((Timestamp) colValue));
+        } else if (colValue instanceof java.sql.Date) {
+            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, isoFormat.format(new Date(((java.sql.Date) colValue).getTime())));
+        } else {
+            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue.toString());
         }
     }
 
