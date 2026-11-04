@@ -6,10 +6,8 @@ import com.jubilee.datalake.utils.Utils;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
 
 public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
 
@@ -66,89 +64,50 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
         MbMessageAssembly alternateAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), alternateMessage);
 
         try {
-            // Extract from JSON Request Body or Query Parameters
-            String nationalId = getBodyOrQueryParam(inAssembly, "nationalIdNumber", "NationalIdNumber");
-            String taxId = getBodyOrQueryParam(inAssembly, "taxIdNumber", "TaxIdNumber");
-            String entityId = getBodyOrQueryParam(inAssembly, "entityId", "EntityID", "entityid");
-
-            boolean hasNationalId = !isEmpty(nationalId);
-            boolean hasTaxId = !isEmpty(taxId);
-            boolean hasEntityId = !isEmpty(entityId);
-
-            if (!hasNationalId && !hasTaxId && !hasEntityId) {
-                sendErrorResponse(alternateMessage, outLocalEnv, 400, "Missing search criteria: At least one search identifier (nationalIdNumber, taxIdNumber, entityId) must be provided.");
+            SearchCriteria criteria = extractSearchCriteria(inAssembly);
+            if (!criteria.isValid()) {
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, 400, 
+                    "Missing search criteria: At least one search identifier (nationalIdNumber, taxIdNumber, entityId) must be provided.");
                 alternate.propagate(alternateAssembly);
                 return;
             }
 
-            QueryContext queryCtx = buildQuery(hasNationalId, hasTaxId, hasEntityId, nationalId, taxId, entityId);
-            List<RecordData> records = executeQuery(queryCtx);
-
-            if (!records.isEmpty()) {
-                buildJsonPayload(outMessage, records);
-                out.propagate(outAssembly);
-            } else {
-                sendErrorResponse(alternateMessage, outLocalEnv, 404, "No customer record found matching the provided search criteria.");
+            List<RecordData> records = executeQuery(criteria);
+            if (records.isEmpty()) {
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, 404, 
+                    "No customer record found matching the provided search criteria.");
                 alternate.propagate(alternateAssembly);
+                return;
             }
+
+            buildJsonPayload(outMessage, records);
+            out.propagate(outAssembly);
 
         } catch (SQLException e) {
             String reason = (e.getMessage() != null) ? e.getMessage() : "Unable to reach database service.";
             System.err.println("Database Error: " + reason);
-            sendErrorResponse(alternateMessage, outLocalEnv, 500, "DB Connection Failed: " + reason);
+            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 500, "DB Connection Failed: " + reason);
             alternate.propagate(alternateAssembly);
         } catch (Exception e) {
-            System.err.println("Internal Error: " + e.getMessage());
-            sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: " + e.getMessage());
+            String reason = (e.getMessage() != null) ? e.getMessage() : e.getClass().getSimpleName();
+            System.err.println("Internal Error: " + reason);
+            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: " + reason);
             alternate.propagate(alternateAssembly);
         }
     }
 
-    private boolean isEmpty(String str) {
-        return str == null || str.trim().isEmpty();
+    private SearchCriteria extractSearchCriteria(MbMessageAssembly inAssembly) {
+        // Fully leverage Utils.getParam for robust parameter retrieval across REST/QueryString
+        String nationalId = Utils.getParam(inAssembly, "nationalIdNumber", "NationalIdNumber");
+        String taxId = Utils.getParam(inAssembly, "taxIdNumber", "TaxIdNumber");
+        String entityId = Utils.getParam(inAssembly, "entityId", "EntityID", "entityid");
+        return new SearchCriteria(nationalId, taxId, entityId);
     }
 
-    private String getBodyOrQueryParam(MbMessageAssembly inAssembly, String... keys) {
-        try {
-            // 1. Check incoming JSON Body Payload
-            MbElement msgRoot = inAssembly.getMessage().getRootElement();
-            for (String key : keys) {
-                MbElement jsonEl = msgRoot.getFirstElementByPath("JSON/Data/" + key);
-                if (jsonEl == null) {
-                    jsonEl = msgRoot.getFirstElementByPath("JSON/" + key);
-                }
-                if (jsonEl != null && jsonEl.getValueAsString() != null && !jsonEl.getValueAsString().trim().isEmpty()) {
-                    return jsonEl.getValueAsString().trim();
-                }
-            }
-        } catch (Exception ignored) {}
-
-        // 2. Fall back to standard Utils parameter extraction (Query/REST params)
-        return Utils.getParam(inAssembly, keys);
-    }
-
-    private QueryContext buildQuery(boolean hasNationalId, boolean hasTaxId, boolean hasEntityId, String nationalId, String taxId, String entityId) {
-        StringBuilder sql = new StringBuilder(BASE_SQL);
-        List<String> params = new ArrayList<>();
-
-        if (hasNationalId) {
-            sql.append(" AND \"NATIONAL_ID\" = ?\n");
-            params.add(nationalId.trim());
-        }
-        if (hasTaxId) {
-            sql.append(" AND \"TAX_NUMBER\" = ?\n");
-            params.add(taxId.trim());
-        }
-        if (hasEntityId) {
-            sql.append(" AND \"CUSTOMER_SYS_ID_ACTISURE\" = ?\n");
-            params.add(entityId.trim());
-        }
-
-        return new QueryContext(sql.toString(), params);
-    }
-
-    private List<RecordData> executeQuery(QueryContext ctx) throws Exception {
+    private List<RecordData> executeQuery(SearchCriteria criteria) throws Exception {
+        QueryContext ctx = buildQueryContext(criteria);
         List<RecordData> results = new ArrayList<>();
+
         try (Connection conn = getJDBCType4Connection(DB_POLICY, JDBC_TransactionType.MB_TRANSACTION_AUTO);
              PreparedStatement ps = conn.prepareStatement(ctx.sql)) {
 
@@ -176,6 +135,24 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
         return results;
     }
 
+    private QueryContext buildQueryContext(SearchCriteria sc) {
+        StringBuilder sql = new StringBuilder(BASE_SQL);
+        List<String> params = new ArrayList<>();
+
+        appendCondition(sc.nationalId, "NATIONAL_ID", sql, params);
+        appendCondition(sc.taxId, "TAX_NUMBER", sql, params);
+        appendCondition(sc.entityId, "CUSTOMER_SYS_ID_ACTISURE", sql, params);
+
+        return new QueryContext(sql.toString(), params);
+    }
+
+    private void appendCondition(String val, String column, StringBuilder sql, List<String> params) {
+        if (val != null && !val.trim().isEmpty()) {
+            sql.append(" AND \"").append(column).append("\" = ?\n");
+            params.add(val.trim());
+        }
+    }
+
     private void buildJsonPayload(MbMessage outMessage, List<RecordData> records) throws Exception {
         MbElement root = outMessage.getRootElement();
 
@@ -186,7 +163,6 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
 
         MbElement jsonRoot = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
         jsonRoot.setSpecificType(MbJSON.OBJECT);
-
         jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "success", true);
 
         MbElement statusObj = jsonRoot.createElementAsLastChild(MbElement.TYPE_NAME, "status", null);
@@ -201,7 +177,7 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
             MbElement itemObj = detailsArray.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
             itemObj.setSpecificType(MbJSON.OBJECT);
 
-            for (java.util.Map.Entry<String, Object> entry : record.columns.entrySet()) {
+            for (Map.Entry<String, Object> entry : record.columns.entrySet()) {
                 String colName = entry.getKey();
                 Object colValue = entry.getValue();
 
@@ -218,41 +194,24 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
         }
     }
 
-    private void sendErrorResponse(MbMessage altMsg, MbMessage altEnv, int code, String msg) throws MbException {
-        MbElement localEnvRoot = altEnv.getRootElement();
-        MbElement dest = localEnvRoot.getFirstElementByPath("Destination");
-        if (dest == null) {
-            dest = localEnvRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Destination", null);
+    private static class SearchCriteria {
+        final String nationalId;
+        final String taxId;
+        final String entityId;
+
+        SearchCriteria(String nationalId, String taxId, String entityId) {
+            this.nationalId = nationalId;
+            this.taxId = taxId;
+            this.entityId = entityId;
         }
 
-        MbElement http = dest.getFirstElementByPath("HTTP");
-        if (http == null) {
-            http = dest.createElementAsLastChild(MbElement.TYPE_NAME, "HTTP", null);
+        boolean isValid() {
+            return isPresent(nationalId) || isPresent(taxId) || isPresent(entityId);
         }
 
-        MbElement replyCode = http.getFirstElementByPath("ReplyStatusCode");
-        if (replyCode == null) {
-            http.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ReplyStatusCode", code);
-        } else {
-            replyCode.setValue(code);
+        private boolean isPresent(String s) {
+            return s != null && !s.trim().isEmpty();
         }
-
-        MbElement root = altMsg.getRootElement();
-        MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
-        httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
-
-        MbElement json = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
-        json.setSpecificType(MbJSON.OBJECT);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "success", false);
-
-        MbElement statusObj = json.createElementAsLastChild(MbElement.TYPE_NAME, "status", null);
-        statusObj.setSpecificType(MbJSON.OBJECT);
-        statusObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "code", code);
-        statusObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "message", msg);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        sdf.setTimeZone(TimeZone.getTimeZone("Africa/Nairobi"));
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "timestamp", sdf.format(new Date()));
     }
 
     private static class QueryContext {
@@ -266,6 +225,6 @@ public class GetCustomerMasterDataRequestProcessor extends MbJavaComputeNode {
     }
 
     private static class RecordData {
-        final java.util.Map<String, Object> columns = new java.util.LinkedHashMap<>();
+        final Map<String, Object> columns = new LinkedHashMap<>();
     }
 }

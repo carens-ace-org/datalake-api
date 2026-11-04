@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 public class GetCustomerMasterDataV2RequestProcessor extends MbJavaComputeNode {
 
@@ -101,7 +100,7 @@ public class GetCustomerMasterDataV2RequestProcessor extends MbJavaComputeNode {
             boolean hasEntityId = !isEmpty(entityId);
 
             if (!hasNationalId && !hasTaxId && !hasEntityId) {
-                sendErrorResponse(alternateMessage, outLocalEnv, 400, "At least one search parameter (NationalID, TaxpayerID, or EntityID) must be provided.");
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, 400, "At least one search parameter (NationalID, TaxpayerID, or EntityID) must be provided.");
                 alternate.propagate(alternateAssembly);
                 return;
             }
@@ -124,14 +123,14 @@ public class GetCustomerMasterDataV2RequestProcessor extends MbJavaComputeNode {
                 if (recordFound) {
                     out.propagate(outAssembly);
                 } else {
-                    sendErrorResponse(alternateMessage, outLocalEnv, 404, "No customer record found matching the provided search criteria.");
+                    Utils.sendErrorResponse(alternateMessage, outLocalEnv, 404, "No customer record found matching the provided search criteria.");
                     alternate.propagate(alternateAssembly);
                 }
             }
 
         } catch (Exception e) {
             System.err.println("Internal Error: " + e.getMessage());
-            sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: " + e.getMessage());
+            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: " + e.getMessage());
             alternate.propagate(alternateAssembly);
         }
     }
@@ -242,43 +241,6 @@ public class GetCustomerMasterDataV2RequestProcessor extends MbJavaComputeNode {
             System.err.println("SQL Execution Warning: " + sqle.getMessage());
         }
         return hasResults;
-    }
-
-    private void sendErrorResponse(MbMessage altMsg, MbMessage altEnv, int code, String msg) throws MbException {
-        MbElement localEnvRoot = altEnv.getRootElement();
-        MbElement dest = localEnvRoot.getFirstElementByPath("Destination");
-        if (dest == null) {
-            dest = localEnvRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Destination", null);
-        }
-
-        MbElement http = dest.getFirstElementByPath("HTTP");
-        if (http == null) {
-            http = dest.createElementAsLastChild(MbElement.TYPE_NAME, "HTTP", null);
-        }
-
-        MbElement replyCode = http.getFirstElementByPath("ReplyStatusCode");
-        if (replyCode == null) {
-            http.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ReplyStatusCode", code);
-        } else {
-            replyCode.setValue(code);
-        }
-
-        MbElement root = altMsg.getRootElement();
-        MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
-        httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
-
-        MbElement json = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
-        json.setSpecificType(MbJSON.OBJECT);
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "success", false);
-
-        MbElement statusObj = json.createElementAsLastChild(MbElement.TYPE_NAME, "status", null);
-        statusObj.setSpecificType(MbJSON.OBJECT);
-        statusObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "code", code);
-        statusObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "message", msg);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        sdf.setTimeZone(TimeZone.getTimeZone("Africa/Nairobi"));
-        json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "timestamp", sdf.format(new Date()));
     }
 
     private static class QueryContext {

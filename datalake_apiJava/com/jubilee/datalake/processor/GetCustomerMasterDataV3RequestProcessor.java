@@ -2,7 +2,6 @@ package com.jubilee.datalake.processor;
 
 import com.ibm.broker.javacompute.MbJavaComputeNode;
 import com.ibm.broker.plugin.*;
-import com.jubilee.datalake.exception.ValidationException;
 import com.jubilee.datalake.utils.Utils;
 
 import java.sql.Connection;
@@ -60,14 +59,18 @@ public class GetCustomerMasterDataV3RequestProcessor extends MbJavaComputeNode {
             String country = Utils.getParam(inAssembly, "country", "Country", "Country_Name");
 
             if (isEmpty(entityId) || isEmpty(country)) {
-                throw new ValidationException("Missing mandatory query parameters: 'EntityID' and 'country' are required.");
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, 400, "Missing mandatory query parameters: 'EntityID' and 'country' are required.");
+                alternate.propagate(alternateAssembly);
+                return;
             }
 
             long beneficiaryId;
             try {
                 beneficiaryId = Long.parseLong(entityId.trim());
             } catch (NumberFormatException e) {
-                throw new ValidationException("Invalid 'EntityID': must be a valid numeric value.");
+                Utils.sendErrorResponse(alternateMessage, outLocalEnv, 400, "Invalid 'EntityID': must be a valid numeric value.");
+                alternate.propagate(alternateAssembly);
+                return;
             }
 
             List<MemberRecord> members = executeQuery(country.trim(), beneficiaryId);
@@ -80,12 +83,9 @@ public class GetCustomerMasterDataV3RequestProcessor extends MbJavaComputeNode {
                 alternate.propagate(alternateAssembly);
             }
 
-        } catch (ValidationException ve) {
-            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 400, ve.getMessage());
-            alternate.propagate(alternateAssembly);
         } catch (Exception e) {
             System.err.println("Database Error: " + e.getMessage());
-            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 500, "Contact Jubilee integration team with the request payload and timestamp.");
+            Utils.sendErrorResponse(alternateMessage, outLocalEnv, 500, "Internal Server Error: There was a problem establishing a connection to the given database URL.");
             alternate.propagate(alternateAssembly);
         }
     }
