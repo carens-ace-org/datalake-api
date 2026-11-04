@@ -134,16 +134,24 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run IBM detect-secrets Scan
+      - name: Run IBM detect-secrets Scan & Generate Baseline if Missing
         run: |
           pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
           if [ -f .secrets.baseline ]; then
             echo "Running detect-secrets scan against existing baseline..."
             detect-secrets scan --baseline .secrets.baseline
           else
-            echo "No .secrets.baseline found, running baseline audit scan..."
+            echo "No .secrets.baseline found, generating baseline..."
             detect-secrets scan --update .secrets.baseline
           fi
+
+      - name: Upload Secret Baseline Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: secrets-baseline-${{ github.run_id }}
+          path: .secrets.baseline
+          if-no-files-found: ignore
 
   sonarqube:
     name: 5. Code Quality & Gates (SonarQube)
