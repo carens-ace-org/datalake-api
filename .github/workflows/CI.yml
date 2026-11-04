@@ -123,11 +123,14 @@ jobs:
     name: 4. Secret Detection (IBM detect-secrets)
     needs: trivy-scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Check out source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python for IBM detect-secrets
         uses: actions/setup-python@v5
@@ -145,13 +148,18 @@ jobs:
             detect-secrets scan > .secrets.baseline
           fi
 
-      - name: Upload Secret Baseline Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: secrets-baseline-${{ github.run_id }}
-          path: .secrets.baseline
-          if-no-files-found: ignore
+      - name: Auto-commit .secrets.baseline to repository
+        run: |
+          if git status --porcelain | grep -q '\.secrets\.baseline'; then
+            echo "New baseline detected. Committing to repository..."
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action Bot"
+            git add .secrets.baseline
+            git commit -m "chore(security): auto-generate .secrets.baseline file"
+            git push
+          else
+            echo "No baseline file changes to commit."
+          fi
 
   sonarqube:
     name: 5. Code Quality & Gates (SonarQube)
