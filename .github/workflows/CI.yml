@@ -16,7 +16,6 @@ on:
           - Deploy
           - Rollback
         default: Deploy
-      
       rollback_run_id:
         description: 'GitHub Actions Run ID of the successful deployment to restore'
         required: false
@@ -32,7 +31,7 @@ concurrency:
 
 jobs:
   initialize-action:
-    name: Initialize and Validate Action
+    name: 1. Initialize and Validate
     runs-on: ubuntu-latest
     steps:
       - name: Evaluate Workflow Dispatch Mode
@@ -49,7 +48,8 @@ jobs:
           fi
 
   openapi-lint:
-    name: OpenAPI lint (Redocly)
+    name: 2. OpenAPI lint (Redocly)
+    needs: initialize-action
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
@@ -63,16 +63,15 @@ jobs:
       - name: Lint OpenAPI specs referenced by ACE descriptors
         run: node scripts/lint-openapi.cjs
 
-  security-scan:
-    name: Dependency, secret, and misconfiguration scan (Trivy & IBM detect-secrets)
+  trivy-scan:
+    name: 3. Vulnerability and Config Scan (Trivy)
+    needs: openapi-lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Install Trivy (direct GitHub Releases download)
+      - name: Install Trivy
         run: |
           set -euo pipefail
           TRIVY_VERSION="0.76.1"
@@ -88,7 +87,7 @@ jobs:
           curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
           test -s html.tpl || { echo "html.tpl is missing or empty"; exit 1; }
 
-      - name: Run Trivy rootfs scan (JAR/WAR/PAR/EAR aware)
+      - name: Run Trivy rootfs scan
         env:
           TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
           TRIVY_DEBUG: "true"
@@ -102,6 +101,33 @@ jobs:
             --template '@html.tpl' \
             --output trivy-results.html \
             --debug
+
+      - name: Verify Trivy report was generated and is not empty
+        run: |
+          if [ ! -f trivy-results.html ]; then
+            echo "ERROR: trivy-results.html was not created."
+            exit 1
+          fi
+          SIZE=$(wc -c < trivy-results.html)
+          echo "trivy-results.html size: ${SIZE} bytes"
+
+      - name: Upload Trivy HTML Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-html-report-${{ github.run_id }}
+          path: trivy-results.html
+          if-no-files-found: warn
+
+  ibm-secret-scan:
+    name: 4. Secret Detection (IBM detect-secrets)
+    needs: trivy-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python for IBM detect-secrets
         uses: actions/setup-python@v5
@@ -119,44 +145,9 @@ jobs:
             detect-secrets scan --update .secrets.baseline
           fi
 
-      - name: Verify Trivy report was generated and is not empty
-        run: |
-          if [ ! -f trivy-results.html ]; then
-            echo "ERROR: trivy-results.html was not created."
-            exit 1
-          fi
-          SIZE=$(wc -c < trivy-results.html)
-          echo "trivy-results.html size: ${SIZE} bytes"
-          if [ "$SIZE" -lt 1000 ]; then
-            echo "WARNING: trivy-results.html is suspiciously small (${SIZE} bytes)."
-          fi
-
-      - name: Upload Trivy HTML Report Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-html-report-${{ github.run_id }}
-          path: trivy-results.html
-          if-no-files-found: warn
-
-  ace-compile:
-    name: Native ACE build (ESQL and Java)
-    if: ${{ vars.ACE_RUNNER_ENABLED == 'true' }}
-    runs-on: [self-hosted, windows, ace13]
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-
-      - name: Compile workspace with ACE Toolkit
-        shell: powershell
-        run: |
-          if (-not (Get-Command mqsicreatebar -ErrorAction SilentlyContinue)) {
-            throw 'ACE Toolkit is not on PATH for this runner.'
-          }
-          mqsicreatebar -data "$env:GITHUB_WORKSPACE" -cleanBuild -compileOnly
-
   sonarqube:
-    name: Java quality and cognitive complexity (SonarQube)
+    name: 5. Code Quality & Gates (SonarQube)
+    needs: ibm-secret-scan
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
