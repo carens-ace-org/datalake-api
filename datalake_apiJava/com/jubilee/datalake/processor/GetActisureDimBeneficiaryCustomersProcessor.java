@@ -32,7 +32,8 @@ public class GetActisureDimBeneficiaryCustomersProcessor extends MbJavaComputeNo
         MbMessageAssembly alternateAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), alternateMessage);
 
         try {
-            QueryParams params = extractAndValidateParams(inAssembly);
+            // Leverage centralized parameter extraction and validation from Utils
+            QueryParams params = Utils.extractAndValidateParams(inAssembly);
             if (params.hasError()) {
                 Utils.sendErrorResponse(alternateMessage, outLocalEnv, params.getErrorCode(), params.getErrorMessage());
                 alternate.propagate(alternateAssembly);
@@ -56,23 +57,6 @@ public class GetActisureDimBeneficiaryCustomersProcessor extends MbJavaComputeNo
                 "Internal Server Error: There was a problem establishing a connection to the given database URL.");
             alternate.propagate(alternateAssembly);
         }
-    }
-
-    private QueryParams extractAndValidateParams(MbMessageAssembly inAssembly) {
-        String fromDate = Utils.getParam(inAssembly, "fromDate", "FromDate");
-        String toDate = Utils.getParam(inAssembly, "toDate", "ToDate");
-        String status = Utils.getParam(inAssembly, "status", "Status");
-
-        if (isEmpty(fromDate) || isEmpty(toDate) || isEmpty(status)) {
-            return QueryParams.error(400, "Missing required query parameters: fromDate, toDate, and status are mandatory.");
-        }
-
-        String cleanStatus = status.trim();
-        if (!"NEW".equalsIgnoreCase(cleanStatus) && !"UPDATED".equalsIgnoreCase(cleanStatus)) {
-            return QueryParams.error(400, "Invalid status parameter. Must be either 'NEW' or 'UPDATED'.");
-        }
-
-        return QueryParams.success(fromDate.trim(), toDate.trim(), cleanStatus);
     }
 
     private boolean executeQueryAndBuildResponse(MbMessage outMessage, QueryParams params) throws Exception {
@@ -159,10 +143,4 @@ public class GetActisureDimBeneficiaryCustomersProcessor extends MbJavaComputeNo
             return inputDate + " 23:59:59";
         }
     }
-
-    private boolean isEmpty(String str) {
-        return str == null || str.trim().isEmpty();
-    }
-
-
 }
