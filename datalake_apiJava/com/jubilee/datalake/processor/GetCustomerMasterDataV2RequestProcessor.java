@@ -109,12 +109,9 @@ public class GetCustomerMasterDataV2RequestProcessor extends MbJavaComputeNode {
             MbElement detailsArray = getDetailsArray(outMessage);
 
             try (Connection conn = getJDBCType4Connection(DB_POLICY, JDBC_TransactionType.MB_TRANSACTION_AUTO)) {
-                
-                // 1. Primary Query: DIM_JHL_CUSTOMER
                 QueryContext customerQuery = buildQuery(BASE_CUSTOMER_SQL, "NATIONAL_ID", "TAX_NUMBER", "CUSTOMER_SYS_ID_ACTISURE", hasNationalId, hasTaxId, hasEntityId, nationalId, taxId, entityId);
                 boolean recordFound = queryAndPopulateDetails(conn, customerQuery, detailsArray);
 
-                // 2. Fallback Query: DIM_JHL_BENEFICIARY (if no customer matches found)
                 if (!recordFound) {
                     QueryContext beneficiaryQuery = buildQuery(BASE_BENEFICIARY_SQL, "NATIONAL_ID", "TAX_NUMBER", "BENEFICIARY_SYS_ID_ACTISURE", hasNationalId, hasTaxId, hasEntityId, nationalId, taxId, entityId);
                     recordFound = queryAndPopulateDetails(conn, beneficiaryQuery, detailsArray);
@@ -147,7 +144,7 @@ public class GetCustomerMasterDataV2RequestProcessor extends MbJavaComputeNode {
                 if (jsonEl == null) {
                     jsonEl = msgRoot.getFirstElementByPath("JSON/" + key);
                 }
-                if (jsonEl != null && jsonEl.getValueAsString() != null && !jsonEl.getValueAsString().trim().isEmpty()) {
+                if (jsonEl != null && !isEmpty(jsonEl.getValueAsString())) {
                     return jsonEl.getValueAsString().trim();
                 }
             }
@@ -183,20 +180,18 @@ public class GetCustomerMasterDataV2RequestProcessor extends MbJavaComputeNode {
         StringBuilder sql = new StringBuilder(baseSql);
         List<String> params = new ArrayList<>();
 
-        if (hasNat) {
-            sql.append(" AND \"").append(natCol).append("\" = ?\n");
-            params.add(natVal.trim());
-        }
-        if (hasTax) {
-            sql.append(" AND \"").append(taxCol).append("\" = ?\n");
-            params.add(taxVal.trim());
-        }
-        if (hasEntity) {
-            sql.append(" AND \"").append(entityCol).append("\" = ?\n");
-            params.add(entityVal.trim());
-        }
+        appendParam(sql, params, hasNat, natCol, natVal);
+        appendParam(sql, params, hasTax, taxCol, taxVal);
+        appendParam(sql, params, hasEntity, entityCol, entityVal);
 
         return new QueryContext(sql.toString(), params);
+    }
+
+    private void appendParam(StringBuilder sql, List<String> params, boolean condition, String col, String val) {
+        if (condition) {
+            sql.append(" AND \"").append(col).append("\" = ?\n");
+            params.add(val.trim());
+        }
     }
 
     private boolean queryAndPopulateDetails(Connection conn, QueryContext ctx, MbElement detailsArray) throws Exception {
@@ -216,31 +211,35 @@ public class GetCustomerMasterDataV2RequestProcessor extends MbJavaComputeNode {
                     hasResults = true;
                     MbElement itemObj = detailsArray.createElementAsLastChild(MbElement.TYPE_NAME, "Item", null);
                     itemObj.setSpecificType(MbJSON.OBJECT);
-
-                    for (int i = 1; i <= columnCount; i++) {
-                        String colName = rsmd.getColumnLabel(i);
-                        Object colValue = rs.getObject(i);
-
-                        if (colValue == null) {
-                            continue;
-                        }
-
-                        if (colValue instanceof Number || colValue instanceof Boolean) {
-                            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue);
-                        } else if (colValue instanceof Timestamp) {
-                            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, isoFormat.format((Timestamp) colValue));
-                        } else if (colValue instanceof java.sql.Date) {
-                            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, isoFormat.format(new Date(((java.sql.Date) colValue).getTime())));
-                        } else {
-                            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, colValue.toString());
-                        }
-                    }
+                    populateRowColumns(rs, rsmd, columnCount, itemObj, isoFormat);
                 }
             }
         } catch (SQLException sqle) {
             System.err.println("SQL Execution Warning: " + sqle.getMessage());
         }
         return hasResults;
+    }
+
+    private void populateRowColumns(ResultSet rs, ResultSetMetaData rsmd, int columnCount, MbElement itemObj, SimpleDateFormat isoFormat) throws SQLException, MbException {
+        for (int i = 1; i <= columnCount; i++) {
+            String colName = rsmd.getColumnLabel(i);
+            Object colValue = rs.getObject(i);
+            if (colValue != null) {
+                appendColumnValue(itemObj, colName, colValue, isoFormat);
+            }
+        }
+    }
+
+    private void appendColumnValue(MbElement itemObj, String colName, Object val, SimpleDateFormat isoFormat) throws MbException {
+        if (val instanceof Number || val instanceof Boolean) {
+            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, val);
+        } else if (val instanceof Timestamp) {
+            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, isoFormat.format((Timestamp) val));
+        } else if (val instanceof java.sql.Date) {
+            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, isoFormat.format(new Date(((java.sql.Date) val).getTime())));
+        } else {
+            itemObj.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, colName, val.toString());
+        }
     }
 
     private static class QueryContext {
