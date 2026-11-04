@@ -9,63 +9,88 @@ import java.util.TimeZone;
 
 public class Utils {
 
-    private static final String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
     private static final String TIMEZONE_NAIROBI = "Africa/Nairobi";
 
-    
     public static String getParam(MbMessageAssembly assembly, String... keys) {
         try {
             MbElement root = assembly.getLocalEnvironment().getRootElement();
+            String val = searchParamInPath(root, "REST/Input/Parameters", keys);
+            if (val != null) {
+                return val;
+            }
+            return searchParamInPath(root, "HTTP/Input/QueryString", keys);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
 
-            
-            MbElement restParams = root.getFirstElementByPath("REST/Input/Parameters");
-            if (restParams != null) {
-                for (String key : keys) {
-                    MbElement el = restParams.getFirstElementByPath(key);
-                    if (el != null && el.getValueAsString() != null && !el.getValueAsString().trim().isEmpty()) {
-                        return el.getValueAsString().trim();
-                    }
+    private static String searchParamInPath(MbElement root, String path, String[] keys) {
+        try {
+            MbElement parent = root.getFirstElementByPath(path);
+            if (parent == null) {
+                return null;
+            }
+            for (String key : keys) {
+                String val = extractElementValue(parent, key);
+                if (val != null) {
+                    return val;
                 }
             }
-
-            
-            MbElement queryParams = root.getFirstElementByPath("HTTP/Input/QueryString");
-            if (queryParams != null) {
-                for (String key : keys) {
-                    MbElement el = queryParams.getFirstElementByPath(key);
-                    if (el != null && el.getValueAsString() != null && !el.getValueAsString().trim().isEmpty()) {
-                        return el.getValueAsString().trim();
-                    }
-                }
-            }
-        } catch (Exception ignored) {}
+        } catch (MbException ignored) {}
         return null;
     }
 
-    
+    private static String extractElementValue(MbElement parent, String key) {
+        try {
+            MbElement el = parent.getFirstElementByPath(key);
+            if (el == null) {
+                return null;
+            }
+            String val = el.getValueAsString();
+            return isEmpty(val) ? null : val.trim();
+        } catch (MbException e) {
+            return null;
+        }
+    }
+
     public static void sendErrorResponse(MbMessage altMsg, MbMessage altEnv, int code, String msg) throws MbException {
         MbElement localEnvRoot = altEnv.getRootElement();
-        MbElement dest = localEnvRoot.getFirstElementByPath("Destination");
-        if (dest == null) {
-            dest = localEnvRoot.createElementAsLastChild(MbElement.TYPE_NAME, "Destination", null);
-        }
+        MbElement httpDest = getOrCreateHttpDestination(localEnvRoot);
+        updateReplyStatusCode(httpDest, code);
 
-        MbElement http = dest.getFirstElementByPath("HTTP");
-        if (http == null) {
-            http = dest.createElementAsLastChild(MbElement.TYPE_NAME, "HTTP", null);
-        }
+        MbElement root = altMsg.getRootElement();
+        addHttpReplyHeader(root);
+        addErrorJsonPayload(root, code, msg);
+    }
 
-        MbElement replyCode = http.getFirstElementByPath("ReplyStatusCode");
+    private static MbElement getOrCreateHttpDestination(MbElement localEnvRoot) throws MbException {
+        MbElement dest = getOrCreateChild(localEnvRoot, "Destination");
+        return getOrCreateChild(dest, "HTTP");
+    }
+
+    private static MbElement getOrCreateChild(MbElement parent, String name) throws MbException {
+        MbElement child = parent.getFirstElementByPath(name);
+        if (child == null) {
+            child = parent.createElementAsLastChild(MbElement.TYPE_NAME, name, null);
+        }
+        return child;
+    }
+
+    private static void updateReplyStatusCode(MbElement httpDest, int code) throws MbException {
+        MbElement replyCode = httpDest.getFirstElementByPath("ReplyStatusCode");
         if (replyCode == null) {
-            http.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ReplyStatusCode", code);
+            httpDest.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ReplyStatusCode", code);
         } else {
             replyCode.setValue(code);
         }
+    }
 
-        MbElement root = altMsg.getRootElement();
+    private static void addHttpReplyHeader(MbElement root) throws MbException {
         MbElement httpHeader = root.createElementAsLastChild("HTTPReplyHeader");
         httpHeader.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content-Type", "application/json");
+    }
 
+    private static void addErrorJsonPayload(MbElement root, int code, String msg) throws MbException {
         MbElement json = root.createElementAsLastChild("JSON").createElementAsLastChild(MbElement.TYPE_NAME, "Data", null);
         json.setSpecificType(MbJSON.OBJECT);
         json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "success", false);
@@ -78,7 +103,7 @@ public class Utils {
         sdf.setTimeZone(TimeZone.getTimeZone(TIMEZONE_NAIROBI));
         json.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "timestamp", sdf.format(new Date()));
     }
-    
+
     public static QueryParams extractAndValidateParams(MbMessageAssembly inAssembly) {
         String fromDate = Utils.getParam(inAssembly, "fromDate", "FromDate");
         String toDate = Utils.getParam(inAssembly, "toDate", "ToDate");
@@ -95,15 +120,14 @@ public class Utils {
 
         return QueryParams.success(fromDate.trim(), toDate.trim(), cleanStatus);
     }
-    
 
     private static boolean isEmpty(String str) {
         return str == null || str.trim().isEmpty();
     }
-    
+
     public static int parsePaginationParam(MbMessageAssembly inAssembly, String key, int defaultVal, int minVal) {
         String val = getParam(inAssembly, key);
-        if (val == null || val.trim().isEmpty()) {
+        if (isEmpty(val)) {
             return defaultVal;
         }
         try {
@@ -113,5 +137,4 @@ public class Utils {
             return defaultVal;
         }
     }
-    
 }
