@@ -16,7 +16,7 @@ on:
           - Deploy
           - Rollback
         default: Deploy
-
+      
       rollback_run_id:
         description: 'GitHub Actions Run ID of the successful deployment to restore'
         required: false
@@ -64,11 +64,13 @@ jobs:
         run: node scripts/lint-openapi.cjs
 
   security-scan:
-    name: Dependency, secret, and misconfiguration scan (Trivy)
+    name: Dependency, secret, and misconfiguration scan (Trivy & IBM detect-secrets)
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install Trivy (direct GitHub Releases download)
         run: |
@@ -100,6 +102,22 @@ jobs:
             --template '@html.tpl' \
             --output trivy-results.html \
             --debug
+
+      - name: Set up Python for IBM detect-secrets
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run IBM detect-secrets Scan
+        run: |
+          pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
+          if [ -f .secrets.baseline ]; then
+            echo "Running detect-secrets scan against existing baseline..."
+            detect-secrets scan --baseline .secrets.baseline
+          else
+            echo "No .secrets.baseline found, running baseline audit scan..."
+            detect-secrets scan --update .secrets.baseline
+          fi
 
       - name: Verify Trivy report was generated and is not empty
         run: |
