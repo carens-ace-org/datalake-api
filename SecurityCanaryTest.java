@@ -1,7 +1,7 @@
 public class SecurityCanaryTest {
 
     // TruffleHog Detector Target
-    public static final String STRIPE_TEST_KEY = "sk_live_51234567890abcdefghijklmnopq";
+    public static final String STRIPE_TEST_KEY = "sk_live_999999999999999999999999_testvector";
 
     // Trivy Secret Scanner Target
     public static final String SSH_PRIVATE_KEY = 
