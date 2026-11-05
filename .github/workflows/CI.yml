@@ -71,15 +71,17 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Essential: TruffleHog needs full commit history to scan past commits
+          fetch-depth: 0 
 
-      - name: Run TruffleHog
-        uses: trufflehog/trufflehog@v3
-        with:
-          path: ./
-          base: ${{ github.event.pull_request.base.sha || '' }}
-          head: ${{ github.event.pull_request.head.sha || '' }}
-          extra_args: --debug --only-verified
+      - name: Install and Run TruffleHog CLI
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          
+          # Execute scan and fail pipeline if verified secrets are found
+          trufflehog git file://. --only-verified --fail
 
   trivy-scan:
     name: 4. Trivy Vulnerability and Config Scan
