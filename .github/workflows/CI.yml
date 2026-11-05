@@ -73,15 +73,46 @@ jobs:
         with:
           fetch-depth: 0 
 
-      - name: Install and Run TruffleHog CLI
+      - name: Install TruffleHog CLI
         run: |
           set -euo pipefail
           mkdir -p "$HOME/.local/bin"
           curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          
-          # Execute scan and fail pipeline if verified secrets are found
-          trufflehog git file://. --only-verified --fail
+
+      - name: Run TruffleHog & Generate Report
+        id: trufflehog
+        continue-on-error: true # Allows us to capture output/artifacts even if secrets are found
+        run: |
+          trufflehog git file://. --only-verified --json > trufflehog-results.json
+
+      - name: Print TruffleHog Summary
+        run: |
+          echo "=== TruffleHog Secret Scan Summary ==="
+          if [ -s trufflehog-results.json ]; then
+            # Parse json lines output from TruffleHog and print detector/redacted secret info
+            jq -r 'select(.Verified == true) | "Detector: \(.DetectorName) | Path: \(.SourceMetadata.Data.Git.file) | Commit: \(.SourceMetadata.Data.Git.commit)"' trufflehog-results.json || echo "No verified secrets formatted."
+          else
+            echo "No secrets detected or report is empty."
+          fi
+
+      - name: Upload TruffleHog JSON Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trufflehog-json-report-${{ github.run_id }}
+          path: trufflehog-results.json
+          if-no-files-found: warn
+
+      - name: Evaluate Scan Status
+        run: |
+          # Fail the pipeline explicitly if the JSON report contains any verified findings
+          if grep -q '"Verified":true' trufflehog-results.json 2>/dev/null; then
+            echo "ERROR: Verified secrets were found by TruffleHog!"
+            exit 1
+          else
+            echo "TruffleHog check passed successfully."
+          fi
 
   trivy-scan:
     name: 4. Trivy Vulnerability and Config Scan
