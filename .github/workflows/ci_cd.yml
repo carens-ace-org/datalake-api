@@ -2,15 +2,11 @@ name: ACE Enterprise CI/CD Pipeline
 
 on:
   push:
-    branches: [ "dev", "test" ]
-    tags:
-      - 'v*.*.*'
-  pull_request:
-    branches: [ "dev", "test", "main", "master" ]
+    branches: [ "dev" ]
   workflow_dispatch:
     inputs:
-      target_branch:
-        description: 'Target branch / Environment to deploy'
+      target_environment:
+        description: 'Target environment to deploy'
         required: true
         default: 'dev'
         type: choice
@@ -92,7 +88,7 @@ jobs:
           set -euo pipefail
           TRIVY_VERSION="0.76.1"
           mkdir -p "$HOME/.local/bin"
-          curl -sfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" | tar -xz -C "$HOME/.local/bin" trivy
+          curl -sfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \vert{} tar -xz -C "$HOME/.local/bin" trivy
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Download Trivy HTML Template
         run: curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
@@ -180,7 +176,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: dev
-    if: ${{ github.ref == 'refs/heads/dev' || github.event.inputs.target_branch == 'dev' }}
+    if: ${{ github.event.inputs.target_environment == 'dev' || github.ref == 'refs/heads/dev' }}
     steps:
       - uses: actions/checkout@v4
       - name: Validate BAR files directory and existence
@@ -207,11 +203,11 @@ jobs:
 
   deploy-test:
     name: 8. Deploy to test
-    needs: sonarqube
+    needs: [sonarqube, deploy-dev]
     runs-on: ubuntu-latest
     environment:
       name: test
-    if: ${{ github.ref == 'refs/heads/test' || github.event.inputs.target_branch == 'test' }}
+    if: ${{ github.event.inputs.target_environment == 'test' || github.ref == 'refs/heads/dev' }}
     steps:
       - uses: actions/checkout@v4
       - name: Validate BAR files directory and existence
@@ -238,31 +234,15 @@ jobs:
 
   deploy-prod:
     name: 9. Deploy to prod
-    needs: [sonarqube, deploy-test]
+    needs: [sonarqube]
     runs-on: ubuntu-latest
     environment:
       name: prod
-    if: ${{ github.event.inputs.target_branch == 'prod' || github.ref == 'refs/heads/main' }}
+    if: ${{ github.event.inputs.target_environment == 'prod' }}
     steps:
       - uses: actions/checkout@v4
       - name: Validate BAR files directory and existence
         run: |
           if [ -d "BARfiles" ]; then
             BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
-            if [ -z "$BAR_FILE" ]; then
-              echo "::error::Error: No .bar file found inside the BARfiles directory."
-              exit 1
-            else
-              echo "Found BAR file: $BAR_FILE"
-              echo "BAR_FILE_PATH=$BAR_FILE" >> $GITHUB_ENV
-            fi
-          else
-            echo "::error::Error: BARfiles directory does not exist."
-            exit 1
-          fi
-      - name: Set Environment Variables (Prod)
-        run: |
-          echo "RUNTIME_NAME=datalake-api-prod" >> $GITHUB_ENV
-          echo "ACE_API_HOST=https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
-      - name: Authenticate & Deploy to Prod Runtime
-        run: echo "Deploying verified artifact ${{ env.BAR_FILE_PATH }} to prod Frankfurt runtime..."
+            if [ -z "$BAR_FILE
