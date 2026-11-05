@@ -187,15 +187,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
-      - name: Run IBM detect-secrets Scan & Generate Baseline if Missing
+      - name: Run IBM detect-secrets Scan
         run: |
           pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
+          
           if [ -f .secrets.baseline ]; then
-            echo "Running detect-secrets scan against existing baseline..."
-            detect-secrets scan --baseline .secrets.baseline
+            echo "Running detect-secrets scan and updating baseline comparison..."
+            detect-secrets scan --update .secrets.baseline
           else
-            echo "No .secrets.baseline found, generating baseline file..."
+            echo "No .secrets.baseline found, generating initial baseline file..."
             detect-secrets scan > .secrets.baseline
           fi
 
@@ -206,7 +208,7 @@ jobs:
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action Bot"
             git add .secrets.baseline
-            git commit -m "chore(security): auto-generate .secrets.baseline file"
+            git commit -m "chore(security): auto-generate or update .secrets.baseline file"
             git push
           else
             echo "No baseline file changes to commit."
