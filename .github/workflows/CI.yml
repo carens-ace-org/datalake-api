@@ -80,30 +80,22 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Debug Workspace Files
-        run: |
-          echo "=== Listing files in workspace ==="
-          find . -maxdepth 3 -not -path '*/.*'
-          echo "=== Checking for canary file ==="
-          if [ -f "security-canary-test.txt" ]; then
-            echo "Found security-canary-test.txt! Contents:"
-            cat security-canary-test.txt
-          else
-            echo "WARNING: security-canary-test.txt not found in root workspace!"
-          fi
-
       - name: Run TruffleHog & Generate Report
         id: trufflehog
         continue-on-error: true
         run: |
+          # Exclude .git folder, the results file itself, ACE policies, and BAR archives
           trufflehog filesystem . --json --no-verification \
-            --exclude-paths <(echo -e ".metadata/.*\n.*\.bar\n.*\.policyxml") \
+            --exclude-paths <(echo -e ".git/.*\ntrufflehog-results\.json\n.*\.bar\n.*\.policyxml") \
             > trufflehog-results.json 2>&1 || true
 
-      - name: Dump Raw TruffleHog Output for Inspection
-        run: |
-          echo "=== Raw TruffleHog Results / Log ==="
-          cat trufflehog-results.json
+      - name: Upload TruffleHog JSON Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trufflehog-json-report-${{ github.run_id }}
+          path: trufflehog-results.json
+          if-no-files-found: error
 
       - name: Evaluate Scan Status and Print Exact Secrets
         run: |
@@ -111,9 +103,10 @@ jobs:
             echo "=================================================="
             echo "❌ ERROR: Secrets found by TruffleHog!"
             echo "=================================================="
+            echo "📥 Download the full JSON report artifact above for complete details."
+            echo ""
             
-            # Safely parse JSON lines, ignoring any non-JSON log lines
-            jq -r 'select(.DetectorName != null) | "  - Detector: \(.DetectorName)\n    Secret:   \(.Raw)\n"' trufflehog-results.json 2>/dev/null || echo "Could not parse JSON with jq, check raw logs above."
+            jq -r 'select(.DetectorName != null) | "  - Detector: \(.DetectorName)\n    File:     \(.SourceMetadata.Data.Filesystem.file // "unknown")\n    Line:     \(.SourceMetadata.Data.Filesystem.line // "unknown")\n    Secret:   \(.Raw // "N/A")\n"' trufflehog-results.json 2>/dev/null || echo "Check uploaded artifact for full results."
             
             echo "=================================================="
             exit 1
