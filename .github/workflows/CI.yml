@@ -131,95 +131,83 @@ jobs:
             "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
             | tar -xz -C "$HOME/.local/bin" trivy
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          "$HOME/.local/bin/trivy" --version
 
-      - name: Run Trivy rootfs scan (including JAR and secret inspection)
+      - name: Download Trivy HTML Template
+        run: |
+          curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
+
+      - name: Run Trivy rootfs scan (HTML Severity Report)
         env:
           TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
-          TRIVY_DEBUG: "true"
         run: |
-          # Scan rootfs, forcing archive/JAR inspection and secret detection
+          # Scan rootfs including JAR files, outputting formatted HTML
           trivy rootfs . \
             --scanners vuln,misconfig,secret \
             --severity LOW,MEDIUM,HIGH,CRITICAL \
             --ignore-unfixed=false \
             --skip-dirs .git,.metadata \
-            --format json \
-            --output trivy-results.json \
-            --debug
+            --format template \
+            --template '@html.tpl' \
+            --output trivy-results.html
 
-      - name: Verify Trivy report was generated and is not empty
-        run: |
-          if [ ! -f trivy-results.json ]; then
-            echo "ERROR: trivy-results.json was not created."
-            exit 1
-          fi
-          SIZE=$(wc -c < trivy-results.json)
-          echo "trivy-results.json size: ${SIZE} bytes"
-
-      - name: Upload Trivy JSON Report Artifact
+      - name: Upload Trivy HTML Report Artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-json-report-${{ github.run_id }}
-          path: trivy-results.json
+          name: trivy-html-report-${{ github.run_id }}
+          path: trivy-results.html
           if-no-files-found: error
 
   ibm-secret-scan:
-            name: 5. IBM detect-secrets scan
-            needs: trivy-scan
-            runs-on: ubuntu-latest
-            steps:
-              - name: Check out source
-                uses: actions/checkout@v4
-                with:
-                  fetch-depth: 0
-        
-              - name: Set up Python for IBM detect-secrets
-                uses: actions/setup-python@v5
-                with:
-                  python-version: '3.11'
-        
-              - name: Run IBM detect-secrets Non-Interactive Audit and Save Report
-                id: ibm-audit
-                continue-on-error: true
-                run: |
-                  pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
-                  
-                  if [ -f .secrets.baseline ]; then
-                    echo "Scanning current workspace for unbaselined secrets..."
-                    # Use scan to output current findings and compare against baseline non-interactively
-                    detect-secrets scan > current-scan.json
-                    
-                    # Log output details to report file for artifact download
-                    echo "=== IBM detect-secrets Scan Report ===" > ibm-detect-secrets-report.txt
-                    detect-secrets audit .secrets.baseline --report 2>&1 | tee -a ibm-detect-secrets-report.txt || true
-                  else
-                    echo "No .secrets.baseline found. Generating initial baseline..."
-                    detect-secrets scan > .secrets.baseline
-                    echo "Generated initial .secrets.baseline" > ibm-detect-secrets-report.txt
-                    exit 1
-                  fi
-        
-              - name: Upload IBM detect-secrets Report Artifact
-                if: always()
-                uses: actions/upload-artifact@v4
-                with:
-                  name: ibm-detect-secrets-report-${{ github.run_id }}
-                  path: ibm-detect-secrets-report.txt
-                  if-no-files-found: error
-        
-              - name: Evaluate IBM Audit Status
-                run: |
-                  if grep -i "error" ibm-detect-secrets-report.txt || [ -s .secrets.baseline ]; then
-                    echo "=================================================="
-                    echo "❌ ERROR: Unbaselined secrets detected by IBM detect-secrets!"
-                    echo "=================================================="
-                    echo "📥 Download the full IBM audit report artifact above for exact details."
-                    exit 1
-                  else
-                    echo "✅ IBM detect-secrets check passed."
-                  fi
+    name: 5. IBM detect-secrets scan
+    needs: trivy-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python for IBM detect-secrets
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run IBM detect-secrets Non-Interactive Audit
+        id: ibm-audit
+        continue-on-error: true
+        run: |
+          pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
+          
+          if [ -f .secrets.baseline ]; then
+            echo "=== IBM detect-secrets Audit Report ===" > ibm-detect-secrets-report.txt
+            detect-secrets audit .secrets.baseline --report 2>&1 | tee -a ibm-detect-secrets-report.txt || true
+          else
+            echo "No .secrets.baseline found. Generating initial baseline..."
+            detect-secrets scan > .secrets.baseline
+            echo "Generated initial .secrets.baseline" > ibm-detect-secrets-report.txt
+            exit 1
+          fi
+
+      - name: Upload IBM detect-secrets Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ibm-detect-secrets-report-${{ github.run_id }}
+          path: ibm-detect-secrets-report.txt
+          if-no-files-found: error
+
+      - name: Evaluate IBM Audit Status
+        run: |
+          if grep -q "Unaudited secrets were found" ibm-detect-secrets-report.txt; then
+            echo "=================================================="
+            echo "❌ ERROR: Unaudited or new secrets detected by IBM detect-secrets!"
+            echo "=================================================="
+            echo "📥 Download the full IBM audit report artifact above for exact details."
+            exit 1
+          else
+            echo "✅ IBM detect-secrets check passed cleanly."
+          fi
 
   sonarqube:
     name: 6. SonarQube Code Quality & Gates
