@@ -80,38 +80,42 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Debug Workspace Files
+        run: |
+          echo "=== Listing files in workspace ==="
+          find . -maxdepth 3 -not -path '*/.*'
+          echo "=== Checking for canary file ==="
+          if [ -f "security-canary-test.txt" ]; then
+            echo "Found security-canary-test.txt! Contents:"
+            cat security-canary-test.txt
+          else
+            echo "WARNING: security-canary-test.txt not found in root workspace!"
+          fi
+
       - name: Run TruffleHog & Generate Report
         id: trufflehog
         continue-on-error: true
         run: |
-          # --no-verification captures all unverified/mock findings without hitting live APIs
-          trufflehog filesystem . --json --no-verification \
-            --exclude-paths <(echo -e ".metadata/\n*.bar\n*.policyxml") \
-            > trufflehog-results.json
+          # Run filesystem scan with debug output and no verification
+          trufflehog filesystem . --json --no-verification --debug > trufflehog-results.json 2>&1 || true
+
+      - name: Dump Raw TruffleHog Output for Inspection
+        run: |
+          echo "=== Raw TruffleHog Results / Log ==="
+          cat trufflehog-results.json
 
       - name: Evaluate Scan Status and Print Exact Secrets
         run: |
-          if [ -s trufflehog-results.json ] && grep -q '"DetectorName"' trufflehog-results.json 2>/dev/null; then
+          if grep -q '"DetectorName"' trufflehog-results.json 2>/dev/null; then
             echo "=================================================="
             echo "❌ ERROR: Secrets found by TruffleHog!"
             echo "=================================================="
-            
-            # Print detector, file path, line, and raw unredacted secret string
-            jq -r '"  - Detector: \(.DetectorName)\n    File:     \(.SourceMetadata.Data.Filesystem.file // .SourceMetadata.Data.Git.file // "unknown")\n    Line:     \(.SourceMetadata.Data.Filesystem.line // .SourceMetadata.Data.Git.line // "unknown")\n    Secret:   \(.Raw)\n"' trufflehog-results.json
-            
+            jq -r '"  - Detector: \(.DetectorName)\n    Secret:   \(.Raw)\n"' trufflehog-results.json || true
             echo "=================================================="
             exit 1
           else
-            echo "✅ TruffleHog check passed successfully. No unignored secrets detected."
+            echo "✅ TruffleHog check passed successfully. No secrets detected."
           fi
-
-      - name: Upload TruffleHog JSON Report Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trufflehog-json-report-${{ github.run_id }}
-          path: trufflehog-results.json
-          if-no-files-found: warn
 
   trivy-scan:
     name: 4. Trivy Vulnerability and Config Scan
