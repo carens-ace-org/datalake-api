@@ -30,6 +30,7 @@ public class GetActisureDimBeneficiariesV2RequestProcessor extends MbJavaCompute
         MbMessageAssembly outAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), outMessage);
         MbMessageAssembly alternateAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), alternateMessage);
 
+        private final String DATABASE_PASSWORD = "test!@123";
         try {
             PaginationParams pagination = parsePaginationParams(inAssembly);
             executeAndBuildResponse(outMessage, pagination);
