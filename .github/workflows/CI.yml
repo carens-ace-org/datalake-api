@@ -1,245 +1,245 @@
-name: ACE CI
-run-name: "${{ github.run_number }}: ${{ github.event.head_commit.message || github.event.pull_request.title || github.event.inputs.deployment_type || 'Pipeline Run' }}"
+# name: ACE CI
+# run-name: "${{ github.run_number }}: ${{ github.event.head_commit.message || github.event.pull_request.title || github.event.inputs.deployment_type || 'Pipeline Run' }}"
 
-on:
-  push:
-    branches: [ "dev", "main", "master" ]
-  pull_request:
-    branches: [ "dev", "main", "master" ]
-  workflow_dispatch:
-    inputs:
-      deployment_type:
-        description: 'Select deployment type'
-        required: true
-        type: choice
-        options:
-          - Deploy
-          - Rollback
-        default: Deploy
-      rollback_run_id:
-        description: 'GitHub Actions Run ID of the successful deployment to restore'
-        required: false
-        type: string
+# on:
+#   push:
+#     branches: [ "dev", "main", "master" ]
+#   pull_request:
+#     branches: [ "dev", "main", "master" ]
+#   workflow_dispatch:
+#     inputs:
+#       deployment_type:
+#         description: 'Select deployment type'
+#         required: true
+#         type: choice
+#         options:
+#           - Deploy
+#           - Rollback
+#         default: Deploy
+#       rollback_run_id:
+#         description: 'GitHub Actions Run ID of the successful deployment to restore'
+#         required: false
+#         type: string
 
-permissions:
-  contents: read
-  actions: read
+# permissions:
+#   contents: read
+#   actions: read
 
-concurrency:
-  group: ace-ci-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ace-ci-${{ github.ref }}
+#   cancel-in-progress: true
 
-jobs:
-  initialize-action:
-    name: Initialize and Validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Evaluate Workflow Dispatch Mode
-        run: |
-          echo "Deployment Type: ${{ github.event.inputs.deployment_type || 'Deploy' }}"
-          if [ "${{ github.event.inputs.deployment_type }}" == "Rollback" ]; then
-            if [ -z "${{ github.event.inputs.rollback_run_id }}" ]; then
-              echo "Error: rollback_run_id must be provided when performing a rollback."
-              exit 1
-            fi
-            echo "Restoring artifacts from Target Run ID: ${{ github.event.inputs.rollback_run_id }}"
-          else
-            echo "Executing standard deployment flow."
-          fi
+# jobs:
+#   initialize-action:
+#     name: Initialize and Validate
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Evaluate Workflow Dispatch Mode
+#         run: |
+#           echo "Deployment Type: ${{ github.event.inputs.deployment_type || 'Deploy' }}"
+#           if [ "${{ github.event.inputs.deployment_type }}" == "Rollback" ]; then
+#             if [ -z "${{ github.event.inputs.rollback_run_id }}" ]; then
+#               echo "Error: rollback_run_id must be provided when performing a rollback."
+#               exit 1
+#             fi
+#             echo "Restoring artifacts from Target Run ID: ${{ github.event.inputs.rollback_run_id }}"
+#           else
+#             echo "Executing standard deployment flow."
+#           fi
 
-  openapi-lint:
-    name: 2. Redocly OpenAPI lint
-    needs: initialize-action
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
+#   openapi-lint:
+#     name: 2. Redocly OpenAPI lint
+#     needs: initialize-action
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check out source
+#         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
 
-      - name: Lint OpenAPI specs referenced by ACE descriptors
-        run: node scripts/lint-openapi.cjs
+#       - name: Lint OpenAPI specs referenced by ACE descriptors
+#         run: node scripts/lint-openapi.cjs
 
-  trufflehog-scan:
-    name: 3. TruffleHog Secret Leak Check
-    needs: openapi-lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 
+#   trufflehog-scan:
+#     name: 3. TruffleHog Secret Leak Check
+#     needs: openapi-lint
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check out source
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0 
 
-      - name: Install TruffleHog CLI
-        run: |
-          set -euo pipefail
-          mkdir -p "$HOME/.local/bin"
-          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b "$HOME/.local/bin"
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+#       - name: Install TruffleHog CLI
+#         run: |
+#           set -euo pipefail
+#           mkdir -p "$HOME/.local/bin"
+#           curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b "$HOME/.local/bin"
+#           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Run TruffleHog & Generate Report
-        id: trufflehog
-        continue-on-error: true
-        run: |
-          # Exclude .git folder, the results file itself, ACE policies, and BAR archives
-          trufflehog filesystem . --json --no-verification \
-            --exclude-paths <(echo -e ".git/.*\ntrufflehog-results\.json\n.*\.bar\n.*\.policyxml") \
-            > trufflehog-results.json 2>&1 || true
+#       - name: Run TruffleHog & Generate Report
+#         id: trufflehog
+#         continue-on-error: true
+#         run: |
+#           # Exclude .git folder, the results file itself, ACE policies, and BAR archives
+#           trufflehog filesystem . --json --no-verification \
+#             --exclude-paths <(echo -e ".git/.*\ntrufflehog-results\.json\n.*\.bar\n.*\.policyxml") \
+#             > trufflehog-results.json 2>&1 || true
 
-      - name: Upload TruffleHog JSON Report Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trufflehog-json-report-${{ github.run_id }}
-          path: trufflehog-results.json
-          if-no-files-found: error
+#       - name: Upload TruffleHog JSON Report Artifact
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: trufflehog-json-report-${{ github.run_id }}
+#           path: trufflehog-results.json
+#           if-no-files-found: error
 
-      - name: Evaluate Scan Status and Print Exact Secrets
-        run: |
-          if grep -q '"DetectorName"' trufflehog-results.json 2>/dev/null; then
-            echo "=================================================="
-            echo "❌ ERROR: Secrets found by TruffleHog!"
-            echo "=================================================="
-            echo "📥 Download the full JSON report artifact above for complete details."
-            echo ""
+#       - name: Evaluate Scan Status and Print Exact Secrets
+#         run: |
+#           if grep -q '"DetectorName"' trufflehog-results.json 2>/dev/null; then
+#             echo "=================================================="
+#             echo "❌ ERROR: Secrets found by TruffleHog!"
+#             echo "=================================================="
+#             echo "📥 Download the full JSON report artifact above for complete details."
+#             echo ""
             
-            jq -r 'select(.DetectorName != null) | "  - Detector: \(.DetectorName)\n    File:     \(.SourceMetadata.Data.Filesystem.file // "unknown")\n    Line:     \(.SourceMetadata.Data.Filesystem.line // "unknown")\n    Secret:   \(.Raw // "N/A")\n"' trufflehog-results.json 2>/dev/null || echo "Check uploaded artifact for full results."
+#             jq -r 'select(.DetectorName != null) | "  - Detector: \(.DetectorName)\n    File:     \(.SourceMetadata.Data.Filesystem.file // "unknown")\n    Line:     \(.SourceMetadata.Data.Filesystem.line // "unknown")\n    Secret:   \(.Raw // "N/A")\n"' trufflehog-results.json 2>/dev/null || echo "Check uploaded artifact for full results."
             
-            echo "=================================================="
-            exit 1
-          else
-            echo "✅ TruffleHog check passed successfully. No secrets detected."
-          fi
+#             echo "=================================================="
+#             exit 1
+#           else
+#             echo "✅ TruffleHog check passed successfully. No secrets detected."
+#           fi
 
-  trivy-scan:
-    name: 4. Trivy Vulnerability and Config Scan
-    needs: trufflehog-scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
+#   trivy-scan:
+#     name: 4. Trivy Vulnerability and Config Scan
+#     needs: trufflehog-scan
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check out source
+#         uses: actions/checkout@v4
 
-      - name: Install Trivy
-        run: |
-          set -euo pipefail
-          TRIVY_VERSION="0.76.1"
-          mkdir -p "$HOME/.local/bin"
-          curl -sfL \
-            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
-            | tar -xz -C "$HOME/.local/bin" trivy
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+#       - name: Install Trivy
+#         run: |
+#           set -euo pipefail
+#           TRIVY_VERSION="0.76.1"
+#           mkdir -p "$HOME/.local/bin"
+#           curl -sfL \
+#             "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
+#             | tar -xz -C "$HOME/.local/bin" trivy
+#           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Download Trivy HTML Template
-        run: |
-          curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
+#       - name: Download Trivy HTML Template
+#         run: |
+#           curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
 
-      - name: Run Trivy rootfs scan (HTML Severity Report)
-        env:
-          TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
-        run: |
-          # Scan rootfs including JAR files, outputting formatted HTML
-          trivy rootfs . \
-            --scanners vuln,misconfig,secret \
-            --severity LOW,MEDIUM,HIGH,CRITICAL \
-            --ignore-unfixed=false \
-            --skip-dirs .git,.metadata \
-            --format template \
-            --template '@html.tpl' \
-            --output trivy-results.html
+#       - name: Run Trivy rootfs scan (HTML Severity Report)
+#         env:
+#           TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
+#         run: |
+#           # Scan rootfs including JAR files, outputting formatted HTML
+#           trivy rootfs . \
+#             --scanners vuln,misconfig,secret \
+#             --severity LOW,MEDIUM,HIGH,CRITICAL \
+#             --ignore-unfixed=false \
+#             --skip-dirs .git,.metadata \
+#             --format template \
+#             --template '@html.tpl' \
+#             --output trivy-results.html
 
-      - name: Upload Trivy HTML Report Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-html-report-${{ github.run_id }}
-          path: trivy-results.html
-          if-no-files-found: error
+#       - name: Upload Trivy HTML Report Artifact
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: trivy-html-report-${{ github.run_id }}
+#           path: trivy-results.html
+#           if-no-files-found: error
 
-  ibm-secret-scan:
-    name: 5. IBM detect-secrets scan
-    needs: trivy-scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+#   ibm-secret-scan:
+#     name: 5. IBM detect-secrets scan
+#     needs: trivy-scan
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check out source
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-      - name: Set up Python for IBM detect-secrets
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+#       - name: Set up Python for IBM detect-secrets
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.11'
 
-      - name: Run IBM detect-secrets Non-Interactive Audit
-        id: ibm-audit
-        continue-on-error: true
-        run: |
-          pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
+#       - name: Run IBM detect-secrets Non-Interactive Audit
+#         id: ibm-audit
+#         continue-on-error: true
+#         run: |
+#           pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
           
-          if [ -f .secrets.baseline ]; then
-            echo "=== IBM detect-secrets Audit Report ===" > ibm-detect-secrets-report.txt
-            detect-secrets audit .secrets.baseline --report 2>&1 | tee -a ibm-detect-secrets-report.txt || true
-          else
-            echo "No .secrets.baseline found. Generating initial baseline..."
-            detect-secrets scan > .secrets.baseline
-            echo "Generated initial .secrets.baseline" > ibm-detect-secrets-report.txt
-            exit 1
-          fi
+#           if [ -f .secrets.baseline ]; then
+#             echo "=== IBM detect-secrets Audit Report ===" > ibm-detect-secrets-report.txt
+#             detect-secrets audit .secrets.baseline --report 2>&1 | tee -a ibm-detect-secrets-report.txt || true
+#           else
+#             echo "No .secrets.baseline found. Generating initial baseline..."
+#             detect-secrets scan > .secrets.baseline
+#             echo "Generated initial .secrets.baseline" > ibm-detect-secrets-report.txt
+#             exit 1
+#           fi
 
-      - name: Upload IBM detect-secrets Report Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ibm-detect-secrets-report-${{ github.run_id }}
-          path: ibm-detect-secrets-report.txt
-          if-no-files-found: error
+#       - name: Upload IBM detect-secrets Report Artifact
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: ibm-detect-secrets-report-${{ github.run_id }}
+#           path: ibm-detect-secrets-report.txt
+#           if-no-files-found: error
 
-      - name: Evaluate IBM Audit Status
-        run: |
-          if grep -q "Unaudited secrets were found" ibm-detect-secrets-report.txt; then
-            echo "=================================================="
-            echo "❌ ERROR: Unaudited or new secrets detected by IBM detect-secrets!"
-            echo "=================================================="
-            echo "📥 Download the full IBM audit report artifact above for exact details."
-            exit 1
-          else
-            echo "✅ IBM detect-secrets check passed cleanly."
-          fi
+#       - name: Evaluate IBM Audit Status
+#         run: |
+#           if grep -q "Unaudited secrets were found" ibm-detect-secrets-report.txt; then
+#             echo "=================================================="
+#             echo "❌ ERROR: Unaudited or new secrets detected by IBM detect-secrets!"
+#             echo "=================================================="
+#             echo "📥 Download the full IBM audit report artifact above for exact details."
+#             exit 1
+#           else
+#             echo "✅ IBM detect-secrets check passed cleanly."
+#           fi
 
-  sonarqube:
-    name: 6. SonarQube Code Quality & Gates
-    needs: ibm-secret-scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+#   sonarqube:
+#     name: 6. SonarQube Code Quality & Gates
+#     needs: ibm-secret-scan
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check out source
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
+#       - name: Set up Java
+#         uses: actions/setup-java@v5
+#         with:
+#           distribution: temurin
+#           java-version: '21'
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar-${{ hashFiles('**/sonar-project.properties') }}
-          restore-keys: ${{ runner.os }}-sonar-
+#       - name: Cache SonarQube packages
+#         uses: actions/cache@v4
+#         with:
+#           path: ~/.sonar/cache
+#           key: ${{ runner.os }}-sonar-${{ hashFiles('**/sonar-project.properties') }}
+#           restore-keys: ${{ runner.os }}-sonar-
 
-      - name: Run SonarQube analysis and quality gate
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >-
-            -Dsonar.projectKey=ace-enterprise-integration
-            -Dsonar.scanner.javaExePath=${{ env.JAVA_HOME }}/bin/java
-            -Dsonar.qualitygate.wait=true
-            -Dsonar.qualitygate.timeout=600
+#       - name: Run SonarQube analysis and quality gate
+#         uses: SonarSource/sonarqube-scan-action@v5
+#         env:
+#           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#         with:
+#           args: >-
+#             -Dsonar.projectKey=ace-enterprise-integration
+#             -Dsonar.scanner.javaExePath=${{ env.JAVA_HOME }}/bin/java
+#             -Dsonar.qualitygate.wait=true
+#             -Dsonar.qualitygate.timeout=600

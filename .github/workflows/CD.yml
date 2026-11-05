@@ -1,130 +1,130 @@
-name: ACE CD
+# name: ACE CD
 
-on:
-  workflow_run:
-    workflows: ["ACE CI"]
-    types:
-      - completed
-  workflow_dispatch:
-    inputs:
-      target_branch:
-        description: 'Branch to deploy from'
-        required: true
-        default: 'dev'
-        type: choice
-        options:
-          - dev
-          - main
+# on:
+#   workflow_run:
+#     workflows: ["ACE CI"]
+#     types:
+#       - completed
+#   workflow_dispatch:
+#     inputs:
+#       target_branch:
+#         description: 'Branch to deploy from'
+#         required: true
+#         default: 'dev'
+#         type: choice
+#         options:
+#           - dev
+#           - main
 
-jobs:
-  deploy:
-    name: Deploy to Environment
-    runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' }}
-    steps:
-      - name: Check out repository at the correct branch/commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_branch || github.event.inputs.target_branch }}
+# jobs:
+#   deploy:
+#     name: Deploy to Environment
+#     runs-on: ubuntu-latest
+#     if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' }}
+#     steps:
+#       - name: Check out repository at the correct branch/commit
+#         uses: actions/checkout@v4
+#         with:
+#           ref: ${{ github.event.workflow_run.head_branch || github.event.inputs.target_branch }}
 
-      - name: Configure Environment & Endpoints
-        run: |
-          BRANCH="${{ github.event.workflow_run.head_branch || github.event.inputs.target_branch }}"
-          echo "Triggering Branch: $BRANCH"
+#       - name: Configure Environment & Endpoints
+#         run: |
+#           BRANCH="${{ github.event.workflow_run.head_branch || github.event.inputs.target_branch }}"
+#           echo "Triggering Branch: $BRANCH"
           
-          if [ "$BRANCH" == "dev" ]; then
-            echo "ENV_NAME=dev" >> $GITHUB_ENV
-            echo "BAR_NAME=mpesa-dev.bar" >> $GITHUB_ENV
-            echo "RUNTIME_NAME=datalake-api-dev" >> $GITHUB_ENV
-            echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
-          elif [ "$BRANCH" == "main" ] || [ "$BRANCH" == "master" ]; then
-            echo "ENV_NAME=production" >> $GITHUB_ENV
-            echo "BAR_NAME=mpesa-prod.bar" >> $GITHUB_ENV
-            echo "RUNTIME_NAME=datalake-api-prod" >> $GITHUB_ENV
-            echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
-          else
-            echo "Branch $BRANCH is not mapped to an environment. Skipping."
-            exit 0
-          fi
+#           if [ "$BRANCH" == "dev" ]; then
+#             echo "ENV_NAME=dev" >> $GITHUB_ENV
+#             echo "BAR_NAME=mpesa-dev.bar" >> $GITHUB_ENV
+#             echo "RUNTIME_NAME=datalake-api-dev" >> $GITHUB_ENV
+#             echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
+#           elif [ "$BRANCH" == "main" ] || [ "$BRANCH" == "master" ]; then
+#             echo "ENV_NAME=production" >> $GITHUB_ENV
+#             echo "BAR_NAME=mpesa-prod.bar" >> $GITHUB_ENV
+#             echo "RUNTIME_NAME=datalake-api-prod" >> $GITHUB_ENV
+#             echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
+#           else
+#             echo "Branch $BRANCH is not mapped to an environment. Skipping."
+#             exit 0
+#           fi
 
-      - name: Step 1 - Request IBM App Connect Bearer Token
-        id: get-token
-        run: |
-          API_URL="${{ env.ACE_API_HOST }}/api/v1/tokens"
+#       - name: Step 1 - Request IBM App Connect Bearer Token
+#         id: get-token
+#         run: |
+#           API_URL="${{ env.ACE_API_HOST }}/api/v1/tokens"
           
-          RESPONSE=$(curl -s -X POST "$API_URL" \
-            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
-            -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
-            -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
-            -H "accept: application/json" \
-            -H "content-type: application/json" \
-            -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
+#           RESPONSE=$(curl -s -X POST "$API_URL" \
+#             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+#             -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
+#             -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
+#             -H "accept: application/json" \
+#             -H "content-type: application/json" \
+#             -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
           
-          ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
-          if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" == "null" ]; then
-            echo "ERROR: Failed to authenticate with App Connect."
-            echo "Response: $RESPONSE"
-            exit 1
-          fi
+#           ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
+#           if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" == "null" ]; then
+#             echo "ERROR: Failed to authenticate with App Connect."
+#             echo "Response: $RESPONSE"
+#             exit 1
+#           fi
           
-          echo "::add-mask::$ACCESS_TOKEN"
-          echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+#           echo "::add-mask::$ACCESS_TOKEN"
+#           echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
-      - name: Step 2 - Push BAR File from bar-files/ folder
-        run: |
-          BAR_FILE_PATH="./bar-files/${{ env.BAR_NAME }}"
+#       - name: Step 2 - Push BAR File from bar-files/ folder
+#         run: |
+#           BAR_FILE_PATH="./bar-files/${{ env.BAR_NAME }}"
           
-          if [ ! -f "$BAR_FILE_PATH" ]; then
-            echo "ERROR: BAR file not found at $BAR_FILE_PATH"
-            exit 1
-          fi
+#           if [ ! -f "$BAR_FILE_PATH" ]; then
+#             echo "ERROR: BAR file not found at $BAR_FILE_PATH"
+#             exit 1
+#           fi
 
-          ROUTE_NAME=$(basename "${{ env.BAR_NAME }}" .bar)
-          UPLOAD_URL="${{ env.ACE_API_HOST }}/api/v1/bar-files/$ROUTE_NAME"
+#           ROUTE_NAME=$(basename "${{ env.BAR_NAME }}" .bar)
+#           UPLOAD_URL="${{ env.ACE_API_HOST }}/api/v1/bar-files/$ROUTE_NAME"
 
-          echo "Uploading BAR file from bar-files/ to $UPLOAD_URL..."
+#           echo "Uploading BAR file from bar-files/ to $UPLOAD_URL..."
           
-          UPLOAD_RESPONSE=$(curl -s -X PUT "$UPLOAD_URL" \
-            -H "Authorization: Bearer ${{ env.ACCESS_TOKEN }}" \
-            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
-            -H "Content-Type: application/octet-stream" \
-            -H "Accept: application/json" \
-            --data-binary "@$BAR_FILE_PATH")
+#           UPLOAD_RESPONSE=$(curl -s -X PUT "$UPLOAD_URL" \
+#             -H "Authorization: Bearer ${{ env.ACCESS_TOKEN }}" \
+#             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+#             -H "Content-Type: application/octet-stream" \
+#             -H "Accept: application/json" \
+#             --data-binary "@$BAR_FILE_PATH")
 
-          BAR_URL=$(echo "$UPLOAD_RESPONSE" | jq -r '.url')
-          if [ -z "$BAR_URL" ] || [ "$BAR_URL" == "null" ]; then
-            echo "ERROR: Failed to retrieve barURL."
-            echo "Response: $UPLOAD_RESPONSE"
-            exit 1
-          fi
+#           BAR_URL=$(echo "$UPLOAD_RESPONSE" | jq -r '.url')
+#           if [ -z "$BAR_URL" ] || [ "$BAR_URL" == "null" ]; then
+#             echo "ERROR: Failed to retrieve barURL."
+#             echo "Response: $UPLOAD_RESPONSE"
+#             exit 1
+#           fi
           
-          echo "BAR_URL=$BAR_URL" >> $GITHUB_ENV
+#           echo "BAR_URL=$BAR_URL" >> $GITHUB_ENV
 
-      - name: Step 3 - Deploy Integration Runtime
-        run: |
-          RUNTIME_URL="${{ env.ACE_API_HOST }}/api/v1/integration-runtimes/${{ env.RUNTIME_NAME }}"
+#       - name: Step 3 - Deploy Integration Runtime
+#         run: |
+#           RUNTIME_URL="${{ env.ACE_API_HOST }}/api/v1/integration-runtimes/${{ env.RUNTIME_NAME }}"
 
-          PAYLOAD=$(jq -n \
-            --arg name "${{ env.RUNTIME_NAME }}" \
-            --arg bar "$BAR_URL" \
-            '{
-              metadata: { name: $name },
-              spec: {
-                version: "13.0",
-                barURL: [$bar],
-                flowType: { toolkitFlow: true },
-                desiredRunState: "running",
-                replicas: 1
-              }
-            }')
+#           PAYLOAD=$(jq -n \
+#             --arg name "${{ env.RUNTIME_NAME }}" \
+#             --arg bar "$BAR_URL" \
+#             '{
+#               metadata: { name: $name },
+#               spec: {
+#                 version: "13.0",
+#                 barURL: [$bar],
+#                 flowType: { toolkitFlow: true },
+#                 desiredRunState: "running",
+#                 replicas: 1
+#               }
+#             }')
 
-          echo "Deploying runtime to $RUNTIME_URL..."
+#           echo "Deploying runtime to $RUNTIME_URL..."
           
-          DEPLOY_RESPONSE=$(curl -s -X PUT "$RUNTIME_URL" \
-            -H "Authorization: Bearer ${{ env.ACCESS_TOKEN }}" \
-            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
-            -H "Content-Type: application/json" \
-            -H "Accept: application/json" \
-            -d "$PAYLOAD")
+#           DEPLOY_RESPONSE=$(curl -s -X PUT "$RUNTIME_URL" \
+#             -H "Authorization: Bearer ${{ env.ACCESS_TOKEN }}" \
+#             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+#             -H "Content-Type: application/json" \
+#             -H "Accept: application/json" \
+#             -d "$PAYLOAD")
 
-          echo "Deployment Response: $DEPLOY_RESPONSE"
+#           echo "Deployment Response: $DEPLOY_RESPONSE"

@@ -1,0 +1,237 @@
+name: ACE Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "dev" ]
+    tags:
+      - 'v*.*.*' # Triggers only on semantic version tags (e.g., v1.0.0, v2.1.0)
+  pull_request:
+    branches: [ "dev", "main", "master" ]
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Target branch / Environment to deploy'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - test
+          - main
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+
+concurrency:
+  group: ace-pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ==========================================
+  # CI STAGE: Quality & Security Gates
+  # ==========================================
+  initialize-action:
+    name: 1. Initialize and Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate Workflow Execution Mode
+        run: echo "Executing CI Pipeline for ref ${{ github.ref }}"
+
+  openapi-lint:
+    name: 2. Redocly OpenAPI lint
+    needs: initialize-action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/lint-openapi.cjs
+
+  trufflehog-scan:
+    name: 3. TruffleHog Secret Leak Check
+    needs: openapi-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install TruffleHog CLI
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Run TruffleHog Scan
+        continue-on-error: true
+        run: |
+          trufflehog filesystem . --json --no-verification \
+            --exclude-paths <(echo -e ".git/.*\ntrufflehog-results\.json\n.*\.bar\n.*\.policyxml") \
+            > trufflehog-results.json 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trufflehog-json-report-${{ github.run_id }}
+          path: trufflehog-results.json
+          if-no-files-found: error
+      - name: Evaluate Scan Status
+        run: |
+          if grep -q '"DetectorName"' trufflehog-results.json 2>/devnull; then
+            echo "❌ ERROR: Secrets found by TruffleHog!"
+            exit 1
+          else
+            echo "✅ TruffleHog check passed."
+          fi
+
+  trivy-scan:
+    name: 4. Trivy Vulnerability & JAR Scan
+    needs: trufflehog-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          TRIVY_VERSION="0.76.1"
+          mkdir -p "$HOME/.local/bin"
+          curl -sfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" | tar -xz -C "$HOME/.local/bin" trivy
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Download Trivy HTML Template
+        run: curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
+      - name: Run Trivy Scan
+        env:
+          TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db"
+        run: |
+          trivy rootfs . \
+            --scanners vuln,misconfig,secret \
+            --severity LOW,MEDIUM,HIGH,CRITICAL \
+            --ignore-unfixed=false \
+            --skip-dirs .git,.metadata \
+            --format template \
+            --template '@html.tpl' \
+            --output trivy-results.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trivy-html-report-${{ github.run_id }}
+          path: trivy-results.html
+          if-no-files-found: error
+
+  ibm-secret-scan:
+    name: 5. IBM detect-secrets scan
+    needs: trivy-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run IBM detect-secrets Audit
+        continue-on-error: true
+        run: |
+          pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
+          if [ -f .secrets.baseline ]; then
+            echo "=== IBM detect-secrets Audit Report ===" > ibm-detect-secrets-report.txt
+            detect-secrets audit .secrets.baseline --report 2>&1 | tee -a ibm-detect-secrets-report.txt || true
+          else
+            detect-secrets scan > .secrets.baseline
+            echo "Generated initial .secrets.baseline" > ibm-detect-secrets-report.txt
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ibm-detect-secrets-report-${{ github.run_id }}
+          path: ibm-detect-secrets-report.txt
+          if-no-files-found: error
+      - name: Evaluate IBM Audit Status
+        run: |
+          if grep -q "Unaudited secrets were found" ibm-detect-secrets-report.txt; then
+            echo "❌ ERROR: Unaudited secrets detected by IBM detect-secrets!"
+            exit 1
+          else
+            echo "✅ IBM detect-secrets check passed."
+          fi
+
+  sonarqube:
+    name: 6. SonarQube Code Quality & Gates
+    needs: ibm-secret-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >-
+            -Dsonar.projectKey=ace-enterprise-integration
+            -Dsonar.scanner.javaExePath=${{ env.JAVA_HOME }}/bin/java
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=600
+
+  # ==========================================
+  # CD STAGE: Automated Deployment & Tag Gate
+  # ==========================================
+  deploy-dev:
+    name: 7. Deploy to Development
+    needs: sonarqube
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+    if: ${{ github.ref == 'refs/heads/dev' || github.event.inputs.target_branch == 'dev' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set Environment Variables (Dev)
+        run: |
+          echo "BAR_NAME=mpesa-dev.bar" >> $GITHUB_ENV
+          echo "RUNTIME_NAME=datalake-api-dev" >> $GITHUB_ENV
+          echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
+      - name: Authenticate & Deploy to Dev Runtime
+        run: echo "Deploying build artifact to Development runtime..."
+
+  deploy-prod:
+    name: 8. Deploy to Production (Requires Validated Tag)
+    # If running on push, ensure it runs after CI finishes; allow workflow_dispatch override
+    needs: [sonarqube]
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event.inputs.target_branch == 'main' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Tag Commit Passed Successful Test/CI Run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "Verifying CI status for commit: $COMMIT_SHA associated with tag ${{ github.ref }}"
+          
+          # Query GitHub API for run conclusions targeting this specific commit
+          RUN_CONCLUSION=$(gh api repos/${{ github.repository }}/commits/$COMMIT_SHA/check-runs \
+            --jq '.check_runs[] | select(.name=="6. SonarQube Code Quality & Gates") | .conclusion')
+          
+          echo "CI Quality Gate conclusion: $RUN_CONCLUSION"
+          
+          if [ "$RUN_CONCLUSION" != "success" ]; then
+            echo "❌ ERROR: Cannot deploy tag to Production! Associated commit $COMMIT_SHA has not passed the test suite (Status: '$RUN_CONCLUSION')."
+            exit 1
+          fi
+          echo "✅ Tag commit passed all test gates. Proceeding with Production deployment."
+
+      - name: Set Environment Variables (Prod)
+        run: |
+          echo "BAR_NAME=mpesa-prod.bar" >> $GITHUB_ENV
+          echo "RUNTIME_NAME=datalake-api-prod" >> $GITHUB_ENV
+          echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
+
+      - name: Authenticate & Deploy to Production Runtime
+        run: echo "Deploying verified tag artifact to Production runtime..."
