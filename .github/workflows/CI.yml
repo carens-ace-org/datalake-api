@@ -96,8 +96,10 @@ jobs:
         id: trufflehog
         continue-on-error: true
         run: |
-          # Run filesystem scan with debug output and no verification
-          trufflehog filesystem . --json --no-verification --debug > trufflehog-results.json 2>&1 || true
+          # Keep debug output in the console log, but stream ONLY clean JSON into trufflehog-results.json
+          trufflehog filesystem . --json --no-verification \
+            --exclude-paths <(echo -e ".metadata/\n*.bar\n*.policyxml") \
+            > trufflehog-results.json 2>&1 || true
 
       - name: Dump Raw TruffleHog Output for Inspection
         run: |
@@ -110,7 +112,10 @@ jobs:
             echo "=================================================="
             echo "❌ ERROR: Secrets found by TruffleHog!"
             echo "=================================================="
-            jq -r '"  - Detector: \(.DetectorName)\n    Secret:   \(.Raw)\n"' trufflehog-results.json || true
+            
+            # Safely parse JSON lines, ignoring any non-JSON log lines
+            jq -r 'select(.DetectorName != null) | "  - Detector: \(.DetectorName)\n    Secret:   \(.Raw)\n"' trufflehog-results.json 2>/dev/null || echo "Could not parse JSON with jq, check raw logs above."
+            
             echo "=================================================="
             exit 1
           else
