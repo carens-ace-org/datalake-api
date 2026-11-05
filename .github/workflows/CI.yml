@@ -84,8 +84,7 @@ jobs:
         id: trufflehog
         continue-on-error: true
         run: |
-          # Exclude ACE policy files, BAR archives, and eclipse metadata directories from scanning
-          trufflehog git file://. --json \
+          trufflehog filesystem . --json \
             --exclude-paths <(echo -e ".metadata/\n*.bar\n*.policyxml") \
             > trufflehog-results.json
 
