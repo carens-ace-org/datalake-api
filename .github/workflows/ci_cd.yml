@@ -2,11 +2,11 @@ name: ACE Enterprise CI/CD Pipeline
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "dev", "test" ]
     tags:
-      - 'v*.*.*' # Triggers only on semantic version tags (e.g., v1.0.0, v2.1.0)
+      - 'v*.*.*'
   pull_request:
-    branches: [ "dev", "main", "master" ]
+    branches: [ "dev", "test", "main", "master" ]
   workflow_dispatch:
     inputs:
       target_branch:
@@ -17,7 +17,7 @@ on:
         options:
           - dev
           - test
-          - main
+          - prod
 
 permissions:
   contents: read
@@ -29,11 +29,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ==========================================
-  # CI STAGE: Quality & Security Gates
-  # ==========================================
   initialize-action:
-    name: 1. Initialize and Validate
+    name: Initialize and Validate
     runs-on: ubuntu-latest
     steps:
       - name: Evaluate Workflow Execution Mode
@@ -177,61 +174,95 @@ jobs:
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=600
 
-  # ==========================================
-  # CD STAGE: Automated Deployment & Tag Gate
-  # ==========================================
   deploy-dev:
-    name: 7. Deploy to Development
+    name: 7. Deploy to dev
     needs: sonarqube
     runs-on: ubuntu-latest
     environment:
-      name: development
+      name: dev
     if: ${{ github.ref == 'refs/heads/dev' || github.event.inputs.target_branch == 'dev' }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set Environment Variables (Dev)
+      - name: Validate BAR files directory and existence
         run: |
-          echo "BAR_NAME=mpesa-dev.bar" >> $GITHUB_ENV
-          echo "RUNTIME_NAME=datalake-api-dev" >> $GITHUB_ENV
-          echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
-      - name: Authenticate & Deploy to Dev Runtime
-        run: echo "Deploying build artifact to Development runtime..."
-
-  deploy-prod:
-    name: 8. Deploy to Production (Requires Validated Tag)
-    # If running on push, ensure it runs after CI finishes; allow workflow_dispatch override
-    needs: [sonarqube]
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event.inputs.target_branch == 'main' }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Verify Tag Commit Passed Successful Test/CI Run
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          COMMIT_SHA=$(git rev-parse HEAD)
-          echo "Verifying CI status for commit: $COMMIT_SHA associated with tag ${{ github.ref }}"
-          
-          # Query GitHub API for run conclusions targeting this specific commit
-          RUN_CONCLUSION=$(gh api repos/${{ github.repository }}/commits/$COMMIT_SHA/check-runs \
-            --jq '.check_runs[] | select(.name=="6. SonarQube Code Quality & Gates") | .conclusion')
-          
-          echo "CI Quality Gate conclusion: $RUN_CONCLUSION"
-          
-          if [ "$RUN_CONCLUSION" != "success" ]; then
-            echo "❌ ERROR: Cannot deploy tag to Production! Associated commit $COMMIT_SHA has not passed the test suite (Status: '$RUN_CONCLUSION')."
+          if [ -d "BARfiles" ]; then
+            BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
+            if [ -z "$BAR_FILE" ]; then
+              echo "::error::Error: No .bar file found inside the BARfiles directory."
+              exit 1
+            else
+              echo "Found BAR file: $BAR_FILE"
+              echo "BAR_FILE_PATH=$BAR_FILE" >> $GITHUB_ENV
+            fi
+          else
+            echo "::error::Error: BARfiles directory does not exist."
             exit 1
           fi
-          echo "✅ Tag commit passed all test gates. Proceeding with Production deployment."
+      - name: Set Environment Variables (Dev)
+        run: |
+          echo "RUNTIME_NAME=datalake-api-dev" >> $GITHUB_ENV
+          echo "ACE_API_HOST=https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
+      - name: Authenticate & Deploy to Dev Runtime
+        run: echo "Deploying build artifact ${{ env.BAR_FILE_PATH }} to dev Frankfurt runtime..."
 
+  deploy-test:
+    name: 8. Deploy to test
+    needs: sonarqube
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+    if: ${{ github.ref == 'refs/heads/test' || github.event.inputs.target_branch == 'test' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate BAR files directory and existence
+        run: |
+          if [ -d "BARfiles" ]; then
+            BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
+            if [ -z "$BAR_FILE" ]; then
+              echo "::error::Error: No .bar file found inside the BARfiles directory."
+              exit 1
+            else
+              echo "Found BAR file: $BAR_FILE"
+              echo "BAR_FILE_PATH=$BAR_FILE" >> $GITHUB_ENV
+            fi
+          else
+            echo "::error::Error: BARfiles directory does not exist."
+            exit 1
+          fi
+      - name: Set Environment Variables (Test)
+        run: |
+          echo "RUNTIME_NAME=datalake-api-test" >> $GITHUB_ENV
+          echo "ACE_API_HOST=https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
+      - name: Authenticate & Deploy to Test Runtime
+        run: echo "Deploying build artifact ${{ env.BAR_FILE_PATH }} to test Frankfurt runtime..."
+
+  deploy-prod:
+    name: 9. Deploy to prod
+    needs: [sonarqube, deploy-test]
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    if: ${{ github.event.inputs.target_branch == 'prod' || github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate BAR files directory and existence
+        run: |
+          if [ -d "BARfiles" ]; then
+            BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
+            if [ -z "$BAR_FILE" ]; then
+              echo "::error::Error: No .bar file found inside the BARfiles directory."
+              exit 1
+            else
+              echo "Found BAR file: $BAR_FILE"
+              echo "BAR_FILE_PATH=$BAR_FILE" >> $GITHUB_ENV
+            fi
+          else
+            echo "::error::Error: BARfiles directory does not exist."
+            exit 1
+          fi
       - name: Set Environment Variables (Prod)
         run: |
-          echo "BAR_NAME=mpesa-prod.bar" >> $GITHUB_ENV
           echo "RUNTIME_NAME=datalake-api-prod" >> $GITHUB_ENV
-          echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
-
-      - name: Authenticate & Deploy to Production Runtime
-        run: echo "Deploying verified tag artifact to Production runtime..."
+          echo "ACE_API_HOST=https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
+      - name: Authenticate & Deploy to Prod Runtime
+        run: echo "Deploying verified artifact ${{ env.BAR_FILE_PATH }} to prod Frankfurt runtime..."
