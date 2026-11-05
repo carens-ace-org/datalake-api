@@ -30,8 +30,6 @@ public class GetActisureDimBeneficiariesV2RequestProcessor extends MbJavaCompute
         MbMessageAssembly outAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), outMessage);
         MbMessageAssembly alternateAssembly = new MbMessageAssembly(inAssembly, outLocalEnv, inAssembly.getExceptionList(), alternateMessage);
 
-        // TruffleHog Canary Test (Mock Slack Token format)
-        final String SLACK_TEST_TOKEN = "xoxb-111111111111-2222222222222-AbCdEfGhIjKlMnOpQrStUvWx";
         try {
             PaginationParams pagination = parsePaginationParams(inAssembly);
             executeAndBuildResponse(outMessage, pagination);
