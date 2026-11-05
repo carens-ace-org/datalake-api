@@ -5,28 +5,37 @@ on:
     workflows: ["ACE CI"]
     types:
       - completed
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Branch to deploy from'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - main
 
 jobs:
   deploy:
     name: Deploy to Environment
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' }}
     steps:
-      - name: Check out repository at the triggering commit
+      - name: Check out repository at the correct branch/commit
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ github.event.workflow_run.head_branch || github.event.inputs.target_branch }}
 
       - name: Configure Environment & Endpoints
         run: |
-          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          BRANCH="${{ github.event.workflow_run.head_branch || github.event.inputs.target_branch }}"
           echo "Triggering Branch: $BRANCH"
           
           if [ "$BRANCH" == "dev" ]; then
             echo "ENV_NAME=dev" >> $GITHUB_ENV
             echo "BAR_NAME=mpesa-dev.bar" >> $GITHUB_ENV
             echo "RUNTIME_NAME=datalake-api-dev" >> $GITHUB_ENV
-            # If deploying to your local/dev server via public tunnel or local runner:
             echo "ACE_API_HOST=https://api.a-vir-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
           elif [ "$BRANCH" == "main" ] || [ "$BRANCH" == "master" ]; then
             echo "ENV_NAME=production" >> $GITHUB_ENV
@@ -63,7 +72,6 @@ jobs:
 
       - name: Step 2 - Push BAR File from bar-files/ folder
         run: |
-          # BAR file is pulled from your bar-files directory as requested
           BAR_FILE_PATH="./bar-files/${{ env.BAR_NAME }}"
           
           if [ ! -f "$BAR_FILE_PATH" ]; then
