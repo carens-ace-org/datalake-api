@@ -70,7 +70,7 @@ jobs:
           if-no-files-found: error
       - name: Evaluate Scan Status
         run: |
-          if grep -q '"DetectorName"' trufflehog-results.json 2>/devnull; then
+          if grep -q '"DetectorName"' trufflehog-results.json 2>/dev/null; then
             echo "❌ ERROR: Secrets found by TruffleHog!"
             exit 1
           else
@@ -88,7 +88,7 @@ jobs:
           set -euo pipefail
           TRIVY_VERSION="0.76.1"
           mkdir -p "$HOME/.local/bin"
-          curl -sfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \vert{} tar -xz -C "$HOME/.local/bin" trivy
+          curl -sfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" | tar -xz -C "$HOME/.local/bin" trivy
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Download Trivy HTML Template
         run: curl -fL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
@@ -245,4 +245,20 @@ jobs:
         run: |
           if [ -d "BARfiles" ]; then
             BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
-            if [ -z "$BAR_FILE
+            if [ -z "$BAR_FILE" ]; then
+              echo "::error::Error: No .bar file found inside the BARfiles directory."
+              exit 1
+            else
+              echo "Found BAR file: $BAR_FILE"
+              echo "BAR_FILE_PATH=$BAR_FILE" >> $GITHUB_ENV
+            fi
+          else
+            echo "::error::Error: BARfiles directory does not exist."
+            exit 1
+          fi
+      - name: Set Environment Variables (Prod)
+        run: |
+          echo "RUNTIME_NAME=datalake-api-prod" >> $GITHUB_ENV
+          echo "ACE_API_HOST=https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
+      - name: Authenticate & Deploy to Prod Runtime
+        run: echo "Deploying build artifact ${{ env.BAR_FILE_PATH }} to production Frankfurt runtime..."
