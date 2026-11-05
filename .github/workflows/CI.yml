@@ -82,16 +82,16 @@ jobs:
 
       - name: Run TruffleHog & Generate Report
         id: trufflehog
-        continue-on-error: true # Allows us to capture output/artifacts even if secrets are found
+        continue-on-error: true
         run: |
-          trufflehog git file://. --only-verified --json > trufflehog-results.json
+          # Removed --only-verified so test mock strings and high-entropy patterns trigger failures
+          trufflehog git file://. --json > trufflehog-results.json
 
       - name: Print TruffleHog Summary
         run: |
           echo "=== TruffleHog Secret Scan Summary ==="
           if [ -s trufflehog-results.json ]; then
-            # Parse json lines output from TruffleHog and print detector/redacted secret info
-            jq -r 'select(.Verified == true) | "Detector: \(.DetectorName) | Path: \(.SourceMetadata.Data.Git.file) | Commit: \(.SourceMetadata.Data.Git.commit)"' trufflehog-results.json || echo "No verified secrets formatted."
+            jq -r '"Detector: \(.DetectorName) | Path: \(.SourceMetadata.Data.Git.file) | Commit: \(.SourceMetadata.Data.Git.commit)"' trufflehog-results.json || echo "No secrets formatted."
           else
             echo "No secrets detected or report is empty."
           fi
@@ -106,9 +106,8 @@ jobs:
 
       - name: Evaluate Scan Status
         run: |
-          # Fail the pipeline explicitly if the JSON report contains any verified findings
-          if grep -q '"Verified":true' trufflehog-results.json 2>/dev/null; then
-            echo "ERROR: Verified secrets were found by TruffleHog!"
+          if [ -s trufflehog-results.json ] && grep -q '"SourceMetadata"' trufflehog-results.json 2>/dev/null; then
+            echo "ERROR: Secrets were found by TruffleHog!"
             exit 1
           else
             echo "TruffleHog check passed successfully."
@@ -174,43 +173,33 @@ jobs:
     name: 5. IBM detect-secrets scan
     needs: trivy-scan
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Check out source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python for IBM detect-secrets
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Run IBM detect-secrets Scan
+      - name: Run IBM detect-secrets Strict Audit
         run: |
           pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
           
           if [ -f .secrets.baseline ]; then
-            echo "Running detect-secrets scan and updating baseline comparison..."
-            detect-secrets scan --update .secrets.baseline
+            echo "Auditing repository against existing .secrets.baseline..."
+            # Strict audit mode: fails the build if new unbaselined secrets are introduced
+            detect-secrets audit --baseline .secrets.baseline || {
+              echo "ERROR: Unbaselined secrets detected by IBM detect-secrets!"
+              exit 1
+            }
           else
-            echo "No .secrets.baseline found, generating initial baseline file..."
+            echo "No .secrets.baseline found. Generating initial baseline..."
             detect-secrets scan > .secrets.baseline
-          fi
-
-      - name: Auto-commit .secrets.baseline to repository
-        run: |
-          if git status --porcelain | grep -q '\.secrets\.baseline'; then
-            echo "New baseline detected. Committing to repository..."
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action Bot"
-            git add .secrets.baseline
-            git commit -m "chore(security): auto-generate or update .secrets.baseline file"
-            git push
-          else
-            echo "No baseline file changes to commit."
+            echo "Please commit the initial .secrets.baseline file to your repository."
+            exit 1
           fi
 
   sonarqube:
