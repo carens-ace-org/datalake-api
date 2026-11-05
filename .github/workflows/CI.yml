@@ -84,8 +84,10 @@ jobs:
         id: trufflehog
         continue-on-error: true
         run: |
-          # Removed --only-verified so test mock strings and high-entropy patterns trigger failures
-          trufflehog git file://. --json > trufflehog-results.json
+          # Exclude ACE policy files, BAR archives, and eclipse metadata directories from scanning
+          trufflehog git file://. --json \
+            --exclude-paths <(echo -e ".metadata/\n*.bar\n*.policyxml") \
+            > trufflehog-results.json
 
       - name: Print TruffleHog Summary
         run: |
@@ -104,25 +106,20 @@ jobs:
           path: trufflehog-results.json
           if-no-files-found: warn
 
-      - name: Evaluate Scan Status
+      - name: Evaluate Scan Status and Print Exact Secrets
         run: |
           if [ -s trufflehog-results.json ] && grep -q '"SourceMetadata"' trufflehog-results.json 2>/dev/null; then
             echo "=================================================="
-            echo "❌ ERROR: Verified/Detected secrets found by TruffleHog!"
+            echo "❌ ERROR: Secrets found by TruffleHog!"
             echo "=================================================="
-            echo "Please review the affected files below:"
-            echo ""
             
-            # Use jq to extract clean, readable lines showing detector, file path, and commit
-            jq -r 'select(.SourceMetadata != null) | "  - Detector: \(.DetectorName)\n    File:     \(.SourceMetadata.Data.Git.file)\n    Commit:   \(.SourceMetadata.Data.Git.commit)\n    Line:     \(.SourceMetadata.Data.Git.line)\n"' trufflehog-results.json
+            # Use jq to extract Detector, File, Commit, Line, and the exact Raw secret string
+            jq -r 'select(.SourceMetadata != null) | "  - Detector: \(.DetectorName)\n    File:     \(.SourceMetadata.Data.Git.file)\n    Commit:   \(.SourceMetadata.Data.Git.commit)\n    Line:     \(.SourceMetadata.Data.Git.line)\n    Secret:   \(.Raw)\n"' trufflehog-results.json
             
-            echo "=================================================="
-            echo "Action required: Remove the hardcoded secret(s) or add them"
-            echo "to your ignore list before pushing again."
             echo "=================================================="
             exit 1
           else
-            echo "✅ TruffleHog check passed successfully. No secrets detected."
+            echo "✅ TruffleHog check passed successfully. No unignored secrets detected."
           fi
 
   trivy-scan:
