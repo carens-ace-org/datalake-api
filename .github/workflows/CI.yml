@@ -48,7 +48,7 @@ jobs:
           fi
 
   openapi-lint:
-    name: 2. OpenAPI lint (Redocly)
+    name: 2. Redocly OpenAPI lint
     needs: initialize-action
     runs-on: ubuntu-latest
     steps:
@@ -64,24 +64,25 @@ jobs:
         run: node scripts/lint-openapi.cjs
 
   trufflehog-scan:
-    name: 3. Secret Leak Check (TruffleHog)
+    name: 3. TruffleHog Secret Leak Check
     needs: openapi-lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Full git history scan
+          fetch-depth: 0 # Essential: TruffleHog needs full commit history to scan past commits
 
       - name: Run TruffleHog
-        uses: trufflehog/trufflehog@main
+        uses: trufflehog/trufflehog@v3
         with:
           path: ./
           base: ${{ github.event.pull_request.base.sha || '' }}
           head: ${{ github.event.pull_request.head.sha || '' }}
+          extra_args: --debug --only-verified
 
   trivy-scan:
-    name: 4. Vulnerability and Config Scan (Trivy)
+    name: 4. Trivy Vulnerability and Config Scan
     needs: trufflehog-scan
     runs-on: ubuntu-latest
     steps:
@@ -137,7 +138,7 @@ jobs:
           if-no-files-found: warn
 
   ibm-secret-scan:
-    name: 5. Secret Detection (IBM detect-secrets)
+    name: 5. IBM detect-secrets scan
     needs: trivy-scan
     runs-on: ubuntu-latest
     permissions:
@@ -179,7 +180,7 @@ jobs:
           fi
 
   sonarqube:
-    name: 6. Code Quality & Gates (SonarQube)
+    name: 6. SonarQube Code Quality & Gates
     needs: ibm-secret-scan
     runs-on: ubuntu-latest
     steps:
