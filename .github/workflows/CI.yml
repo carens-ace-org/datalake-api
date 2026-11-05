@@ -96,9 +96,8 @@ jobs:
         id: trufflehog
         continue-on-error: true
         run: |
-          # Keep debug output in the console log, but stream ONLY clean JSON into trufflehog-results.json
           trufflehog filesystem . --json --no-verification \
-            --exclude-paths <(echo -e ".metadata/\n*.bar\n*.policyxml") \
+            --exclude-paths <(echo -e ".metadata/.*\n.*\.bar\n.*\.policyxml") \
             > trufflehog-results.json 2>&1 || true
 
       - name: Dump Raw TruffleHog Output for Inspection
