@@ -185,22 +185,43 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run IBM detect-secrets Strict Audit
+      - name: Run IBM detect-secrets Strict Audit and Save Report
+        id: ibm-audit
+        continue-on-error: true
         run: |
           pip install --upgrade "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
           
           if [ -f .secrets.baseline ]; then
             echo "Auditing repository against existing .secrets.baseline..."
-            # Strict audit mode: fails the build if new unbaselined secrets are introduced
-            detect-secrets audit --baseline .secrets.baseline || {
-              echo "ERROR: Unbaselined secrets detected by IBM detect-secrets!"
-              exit 1
-            }
+            # Correct syntax: pass baseline file path positionally, capture output to file
+            detect-secrets audit .secrets.baseline > ibm-detect-secrets-report.txt 2>&1 || true
+            cat ibm-detect-secrets-report.txt
           else
             echo "No .secrets.baseline found. Generating initial baseline..."
             detect-secrets scan > .secrets.baseline
-            echo "Please commit the initial .secrets.baseline file to your repository."
+            echo "Generated initial .secrets.baseline" > ibm-detect-secrets-report.txt
             exit 1
+          fi
+
+      - name: Upload IBM detect-secrets Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ibm-detect-secrets-report-${{ github.run_id }}
+          path: ibm-detect-secrets-report.txt
+          if-no-files-found: error
+
+      - name: Evaluate IBM Audit Status
+        run: |
+          if grep -i "error" ibm-detect-secrets-report.txt || [ -s .secrets.baseline ]; then
+            # Check if unbaselined secrets were detected
+            echo "=================================================="
+            echo "❌ ERROR: Unbaselined secrets detected by IBM detect-secrets!"
+            echo "=================================================="
+            echo "📥 Download the full IBM audit report artifact above for exact line details."
+            exit 1
+          else
+            echo "✅ IBM detect-secrets check passed."
           fi
 
   sonarqube:
