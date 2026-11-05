@@ -107,10 +107,22 @@ jobs:
       - name: Evaluate Scan Status
         run: |
           if [ -s trufflehog-results.json ] && grep -q '"SourceMetadata"' trufflehog-results.json 2>/dev/null; then
-            echo "ERROR: Secrets were found by TruffleHog!"
+            echo "=================================================="
+            echo "❌ ERROR: Verified/Detected secrets found by TruffleHog!"
+            echo "=================================================="
+            echo "Please review the affected files below:"
+            echo ""
+            
+            # Use jq to extract clean, readable lines showing detector, file path, and commit
+            jq -r 'select(.SourceMetadata != null) | "  - Detector: \(.DetectorName)\n    File:     \(.SourceMetadata.Data.Git.file)\n    Commit:   \(.SourceMetadata.Data.Git.commit)\n    Line:     \(.SourceMetadata.Data.Git.line)\n"' trufflehog-results.json
+            
+            echo "=================================================="
+            echo "Action required: Remove the hardcoded secret(s) or add them"
+            echo "to your ignore list before pushing again."
+            echo "=================================================="
             exit 1
           else
-            echo "TruffleHog check passed successfully."
+            echo "✅ TruffleHog check passed successfully. No secrets detected."
           fi
 
   trivy-scan:
