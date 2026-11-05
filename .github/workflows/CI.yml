@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   initialize-action:
-    name: 1. Initialize and Validate
+    name: Initialize and Validate
     runs-on: ubuntu-latest
     steps:
       - name: Evaluate Workflow Dispatch Mode
@@ -63,9 +63,26 @@ jobs:
       - name: Lint OpenAPI specs referenced by ACE descriptors
         run: node scripts/lint-openapi.cjs
 
-  trivy-scan:
-    name: 3. Vulnerability and Config Scan (Trivy)
+  trufflehog-scan:
+    name: 3. Secret Leak Check (TruffleHog)
     needs: openapi-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full git history scan
+
+      - name: Run TruffleHog
+        uses: trufflehog/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.pull_request.base.sha || '' }}
+          head: ${{ github.event.pull_request.head.sha || '' }}
+
+  trivy-scan:
+    name: 4. Vulnerability and Config Scan (Trivy)
+    needs: trufflehog-scan
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
@@ -120,7 +137,7 @@ jobs:
           if-no-files-found: warn
 
   ibm-secret-scan:
-    name: 4. Secret Detection (IBM detect-secrets)
+    name: 5. Secret Detection (IBM detect-secrets)
     needs: trivy-scan
     runs-on: ubuntu-latest
     permissions:
@@ -162,7 +179,7 @@ jobs:
           fi
 
   sonarqube:
-    name: 5. Code Quality & Gates (SonarQube)
+    name: 6. Code Quality & Gates (SonarQube)
     needs: ibm-secret-scan
     runs-on: ubuntu-latest
     steps:
