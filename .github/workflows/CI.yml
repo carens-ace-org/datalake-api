@@ -84,8 +84,8 @@ jobs:
         id: trufflehog
         continue-on-error: true
         run: |
-          # --results=verified,unverified ensures mock/canary test strings are caught
-          trufflehog filesystem . --json --results=verified,unverified \
+          # --no-verification captures all unverified/mock findings without hitting live APIs
+          trufflehog filesystem . --json --no-verification \
             --exclude-paths <(echo -e ".metadata/\n*.bar\n*.policyxml") \
             > trufflehog-results.json
 
