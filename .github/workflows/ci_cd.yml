@@ -71,10 +71,10 @@ jobs:
       - name: Evaluate Scan Status
         run: |
           if grep -q '"DetectorName"' trufflehog-results.json 2>/dev/null; then
-            echo "❌ ERROR: Secrets found by TruffleHog!"
+            echo " ERROR: Secrets found by TruffleHog!"
             exit 1
           else
-            echo "✅ TruffleHog check passed."
+            echo " TruffleHog check passed."
           fi
 
   trivy-scan:
@@ -141,10 +141,10 @@ jobs:
       - name: Evaluate IBM Audit Status
         run: |
           if grep -q "Unaudited secrets were found" ibm-detect-secrets-report.txt; then
-            echo "❌ ERROR: Unaudited secrets detected by IBM detect-secrets!"
+            echo " ERROR: Unaudited secrets detected by IBM detect-secrets!"
             exit 1
           else
-            echo "✅ IBM detect-secrets check passed."
+            echo " IBM detect-secrets check passed."
           fi
 
   sonarqube:
@@ -170,95 +170,138 @@ jobs:
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=600
 
+  # ==========================================
+  # LINEAR CD STAGE: Dev -> Test -> Prod (Frankfurt)
+  # ==========================================
   deploy-dev:
-    name: 7. Deploy to dev
+    name: 7. Deploy to Dev (Frankfurt)
     needs: sonarqube
     runs-on: ubuntu-latest
     environment:
       name: dev
-    if: ${{ github.event.inputs.target_environment == 'dev' || github.ref == 'refs/heads/dev' }}
     steps:
       - uses: actions/checkout@v4
-      - name: Validate BAR files directory and existence
+      - name: Run Deployment Sequence
         run: |
-          if [ -d "BARfiles" ]; then
-            BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
-            if [ -z "$BAR_FILE" ]; then
-              echo "::error::Error: No .bar file found inside the BARfiles directory."
-              exit 1
-            else
-              echo "Found BAR file: $BAR_FILE"
-              echo "BAR_FILE_PATH=$BAR_FILE" >> $GITHUB_ENV
-            fi
-          else
-            echo "::error::Error: BARfiles directory does not exist."
-            exit 1
-          fi
-      - name: Set Environment Variables (Dev)
-        run: |
-          echo "RUNTIME_NAME=datalake-api-dev" >> $GITHUB_ENV
-          echo "ACE_API_HOST=https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
-      - name: Authenticate & Deploy to Dev Runtime
-        run: echo "Deploying build artifact ${{ env.BAR_FILE_PATH }} to dev Frankfurt runtime..."
+          BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
+          BAR_NAME=$(basename "$BAR_FILE")
+          ROUTE_NAME=$(basename "$BAR_NAME" .bar)
+          RUNTIME_NAME="datalake-api-dev"
+          API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
+
+          echo "Authenticating with App Connect Frankfurt..."
+          TOKEN_RESP=$(curl -s -X POST "$API_HOST/api/v1/tokens" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
+            -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
+            -H "accept: application/json" -H "content-type: application/json" \
+            -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
+          
+          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token')
+
+          echo "Uploading BAR file $BAR_NAME..."
+          UPLOAD_RESP=$(curl -s -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "Content-Type: application/octet-stream" \
+            -H "Accept: application/json" \
+            --data-binary "@$BAR_FILE")
+
+          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url')
+          echo "Received BAR URL: $BAR_URL"
+
+          echo "Creating/Updating Integration Runtime $RUNTIME_NAME..."
+          PAYLOAD=$(jq -n --arg name "$RUNTIME_NAME" --arg bar "$BAR_URL" \
+            '{metadata: {name: $name}, spec: {version: "13.0", barURL: [$bar], flowType: {toolkitFlow: true}, desiredRunState: "running", replicas: 1}}')
+
+          curl -s -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "Content-Type: application/json" -H "Accept: application/json" \
+            -d "$PAYLOAD"
 
   deploy-test:
-    name: 8. Deploy to test
-    needs: [sonarqube, deploy-dev]
+    name: 8. Promote to Test (Frankfurt)
+    needs: deploy-dev
     runs-on: ubuntu-latest
     environment:
       name: test
-    if: ${{ github.event.inputs.target_environment == 'test' || github.ref == 'refs/heads/dev' }}
     steps:
       - uses: actions/checkout@v4
-      - name: Validate BAR files directory and existence
+      - name: Run Promotion Sequence
         run: |
-          if [ -d "BARfiles" ]; then
-            BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
-            if [ -z "$BAR_FILE" ]; then
-              echo "::error::Error: No .bar file found inside the BARfiles directory."
-              exit 1
-            else
-              echo "Found BAR file: $BAR_FILE"
-              echo "BAR_FILE_PATH=$BAR_FILE" >> $GITHUB_ENV
-            fi
-          else
-            echo "::error::Error: BARfiles directory does not exist."
-            exit 1
-          fi
-      - name: Set Environment Variables (Test)
-        run: |
-          echo "RUNTIME_NAME=datalake-api-test" >> $GITHUB_ENV
-          echo "ACE_API_HOST=https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
-      - name: Authenticate & Deploy to Test Runtime
-        run: echo "Deploying build artifact ${{ env.BAR_FILE_PATH }} to test Frankfurt runtime..."
+          BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
+          BAR_NAME=$(basename "$BAR_FILE")
+          ROUTE_NAME=$(basename "$BAR_NAME" .bar)
+          RUNTIME_NAME="datalake-api-test"
+          API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
+
+          TOKEN_RESP=$(curl -s -X POST "$API_HOST/api/v1/tokens" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
+            -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
+            -H "accept: application/json" -H "content-type: application/json" \
+            -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
+          
+          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token')
+
+          UPLOAD_RESP=$(curl -s -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "Content-Type: application/octet-stream" \
+            -H "Accept: application/json" \
+            --data-binary "@$BAR_FILE")
+
+          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url')
+
+          PAYLOAD=$(jq -n --arg name "$RUNTIME_NAME" --arg bar "$BAR_URL" \
+            '{metadata: {name: $name}, spec: {version: "13.0", barURL: [$bar], flowType: {toolkitFlow: true}, desiredRunState: "running", replicas: 1}}')
+
+          curl -s -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "Content-Type: application/json" -H "Accept: application/json" \
+            -d "$PAYLOAD"
 
   deploy-prod:
-    name: 9. Deploy to prod
-    needs: [sonarqube]
+    name: 9. Promote to Prod (Frankfurt - Manual Gate)
+    needs: deploy-test
     runs-on: ubuntu-latest
     environment:
-      name: prod
-    if: ${{ github.event.inputs.target_environment == 'prod' }}
+      name: prod # Pauses here for manual review/approval in GitHub UI!
     steps:
       - uses: actions/checkout@v4
-      - name: Validate BAR files directory and existence
+      - name: Run Production Deployment Sequence
         run: |
-          if [ -d "BARfiles" ]; then
-            BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
-            if [ -z "$BAR_FILE" ]; then
-              echo "::error::Error: No .bar file found inside the BARfiles directory."
-              exit 1
-            else
-              echo "Found BAR file: $BAR_FILE"
-              echo "BAR_FILE_PATH=$BAR_FILE" >> $GITHUB_ENV
-            fi
-          else
-            echo "::error::Error: BARfiles directory does not exist."
-            exit 1
-          fi
-      - name: Set Environment Variables (Prod)
-        run: |
-          echo "RUNTIME_NAME=datalake-api-prod" >> $GITHUB_ENV
-          echo "ACE_API_HOST=https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com" >> $GITHUB_ENV
-      - name: Authenticate & Deploy to Prod Runtime
-        run: echo "Deploying build artifact ${{ env.BAR_FILE_PATH }} to production Frankfurt runtime..."
+          BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
+          BAR_NAME=$(basename "$BAR_FILE")
+          ROUTE_NAME=$(basename "$BAR_NAME" .bar)
+          RUNTIME_NAME="datalake-api-prod"
+          API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
+
+          TOKEN_RESP=$(curl -s -X POST "$API_HOST/api/v1/tokens" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
+            -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
+            -H "accept: application/json" -H "content-type: application/json" \
+            -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
+          
+          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token')
+
+          UPLOAD_RESP=$(curl -s -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "Content-Type: application/octet-stream" \
+            -H "Accept: application/json" \
+            --data-binary "@$BAR_FILE")
+
+          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url')
+
+          PAYLOAD=$(jq -n --arg name "$RUNTIME_NAME" --arg bar "$BAR_URL" \
+            '{metadata: {name: $name}, spec: {version: "13.0", barURL: [$bar], flowType: {toolkitFlow: true}, desiredRunState: "running", replicas: 1}}')
+
+          curl -s -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
+            -H "Content-Type: application/json" -H "Accept: application/json" \
+            -d "$PAYLOAD"
