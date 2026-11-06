@@ -186,7 +186,7 @@ jobs:
           set -euo pipefail
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
-          ROUTE_NAME=$(basename "$BAR_NAME" .bar)
+          ROUTE_NAME=$(basename "$BAR_NAME" .bar | tr '[:upper:]' '[:lower:]' | tr '_' '-')
           RUNTIME_NAME="$ROUTE_NAME"
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
@@ -205,7 +205,7 @@ jobs:
             exit 1
           fi
 
-          echo "Uploading BAR file $BAR_NAME..."
+          echo "Uploading BAR file $BAR_NAME as $ROUTE_NAME..."
           UPLOAD_RESP=$(curl -s -S -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
@@ -246,7 +246,7 @@ jobs:
           set -euo pipefail
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
-          ROUTE_NAME=$(basename "$BAR_NAME" .bar)
+          ROUTE_NAME=$(basename "$BAR_NAME" .bar | tr '[:upper:]' '[:lower:]' | tr '_' '-')
           RUNTIME_NAME="$ROUTE_NAME"
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
@@ -302,7 +302,7 @@ jobs:
           set -euo pipefail
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
-          ROUTE_NAME=$(basename "$BAR_NAME" .bar)
+          ROUTE_NAME=$(basename "$BAR_NAME" .bar | tr '[:upper:]' '[:lower:]' | tr '_' '-')
           RUNTIME_NAME="$ROUTE_NAME"
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
