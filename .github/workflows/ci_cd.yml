@@ -187,7 +187,7 @@ jobs:
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
           ROUTE_NAME=$(basename "$BAR_NAME" .bar)
-          RUNTIME_NAME="datalake-api-dev"
+          RUNTIME_NAME="$ROUTE_NAME"
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
           echo "Authenticating with App Connect Frankfurt..."
@@ -247,7 +247,7 @@ jobs:
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
           ROUTE_NAME=$(basename "$BAR_NAME" .bar)
-          RUNTIME_NAME="datalake-api-test"
+          RUNTIME_NAME="$ROUTE_NAME"
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
           TOKEN_RESP=$(curl -s -S -X POST "$API_HOST/api/v1/tokens" \
@@ -303,7 +303,7 @@ jobs:
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
           ROUTE_NAME=$(basename "$BAR_NAME" .bar)
-          RUNTIME_NAME="datalake-api-prod"
+          RUNTIME_NAME="$ROUTE_NAME"
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
           TOKEN_RESP=$(curl -s -S -X POST "$API_HOST/api/v1/tokens" \
