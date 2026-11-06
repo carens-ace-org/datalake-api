@@ -71,10 +71,10 @@ jobs:
       - name: Evaluate Scan Status
         run: |
           if grep -q '"DetectorName"' trufflehog-results.json 2>/dev/null; then
-            echo " ERROR: Secrets found by TruffleHog!"
+            echo "ERROR: Secrets found by TruffleHog!"
             exit 1
           else
-            echo " TruffleHog check passed."
+            echo "TruffleHog check passed."
           fi
 
   trivy-scan:
@@ -141,10 +141,10 @@ jobs:
       - name: Evaluate IBM Audit Status
         run: |
           if grep -q "Unaudited secrets were found" ibm-detect-secrets-report.txt; then
-            echo " ERROR: Unaudited secrets detected by IBM detect-secrets!"
+            echo "ERROR: Unaudited secrets detected by IBM detect-secrets!"
             exit 1
           else
-            echo " IBM detect-secrets check passed."
+            echo "IBM detect-secrets check passed."
           fi
 
   sonarqube:
@@ -183,6 +183,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Deployment Sequence
         run: |
+          set -euo pipefail
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
           ROUTE_NAME=$(basename "$BAR_NAME" .bar)
@@ -190,35 +191,47 @@ jobs:
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
           echo "Authenticating with App Connect Frankfurt..."
-          TOKEN_RESP=$(curl -s -X POST "$API_HOST/api/v1/tokens" \
+          TOKEN_RESP=$(curl -s -S -X POST "$API_HOST/api/v1/tokens" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
             -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
             -H "accept: application/json" -H "content-type: application/json" \
             -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
           
-          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token')
+          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token // empty')
+          if [ -z "$ACCESS_TOKEN" ]; then
+            echo "Authentication Failed. Raw Response:"
+            echo "$TOKEN_RESP"
+            exit 1
+          fi
 
           echo "Uploading BAR file $BAR_NAME..."
-          UPLOAD_RESP=$(curl -s -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
+          UPLOAD_RESP=$(curl -s -S -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "Content-Type: application/octet-stream" \
             -H "Accept: application/json" \
             --data-binary "@$BAR_FILE")
 
-          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url')
+          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url // empty')
+          if [ -z "$BAR_URL" ]; then
+            echo "BAR Upload Failed. Raw Response:"
+            echo "$UPLOAD_RESP"
+            exit 1
+          fi
           echo "Received BAR URL: $BAR_URL"
 
           echo "Creating/Updating Integration Runtime $RUNTIME_NAME..."
           PAYLOAD=$(jq -n --arg name "$RUNTIME_NAME" --arg bar "$BAR_URL" \
             '{metadata: {name: $name}, spec: {version: "13.0", barURL: [$bar], flowType: {toolkitFlow: true}, desiredRunState: "running", replicas: 1}}')
 
-          curl -s -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
+          DEPLOY_RESP=$(curl -s -S -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "Content-Type: application/json" -H "Accept: application/json" \
-            -d "$PAYLOAD"
+            -d "$PAYLOAD")
+
+          echo "Dev Deployment Response: $DEPLOY_RESP"
 
   deploy-test:
     name: 8. Promote to Test (Frankfurt)
@@ -230,38 +243,51 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Promotion Sequence
         run: |
+          set -euo pipefail
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
           ROUTE_NAME=$(basename "$BAR_NAME" .bar)
           RUNTIME_NAME="datalake-api-test"
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
-          TOKEN_RESP=$(curl -s -X POST "$API_HOST/api/v1/tokens" \
+          TOKEN_RESP=$(curl -s -S -X POST "$API_HOST/api/v1/tokens" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
             -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
             -H "accept: application/json" -H "content-type: application/json" \
             -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
           
-          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token')
+          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token // empty')
+          if [ -z "$ACCESS_TOKEN" ]; then
+            echo "Authentication Failed. Raw Response:"
+            echo "$TOKEN_RESP"
+            exit 1
+          fi
 
-          UPLOAD_RESP=$(curl -s -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
+          UPLOAD_RESP=$(curl -s -S -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "Content-Type: application/octet-stream" \
             -H "Accept: application/json" \
             --data-binary "@$BAR_FILE")
 
-          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url')
+          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url // empty')
+          if [ -z "$BAR_URL" ]; then
+            echo "BAR Upload Failed. Raw Response:"
+            echo "$UPLOAD_RESP"
+            exit 1
+          fi
 
           PAYLOAD=$(jq -n --arg name "$RUNTIME_NAME" --arg bar "$BAR_URL" \
             '{metadata: {name: $name}, spec: {version: "13.0", barURL: [$bar], flowType: {toolkitFlow: true}, desiredRunState: "running", replicas: 1}}')
 
-          curl -s -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
+          DEPLOY_RESP=$(curl -s -S -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "Content-Type: application/json" -H "Accept: application/json" \
-            -d "$PAYLOAD"
+            -d "$PAYLOAD")
+
+          echo "Test Deployment Response: $DEPLOY_RESP"
 
   deploy-prod:
     name: 9. Promote to Prod (Frankfurt - Manual Gate)
@@ -273,35 +299,48 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Production Deployment Sequence
         run: |
+          set -euo pipefail
           BAR_FILE=$(find BARfiles -maxdepth 1 -name "*.bar" | head -n 1)
           BAR_NAME=$(basename "$BAR_FILE")
           ROUTE_NAME=$(basename "$BAR_NAME" .bar)
           RUNTIME_NAME="datalake-api-prod"
           API_HOST="https://api.a-fra-c1.appconnect.ipaas.automation.ibm.com"
 
-          TOKEN_RESP=$(curl -s -X POST "$API_HOST/api/v1/tokens" \
+          TOKEN_RESP=$(curl -s -S -X POST "$API_HOST/api/v1/tokens" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
             -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
             -H "accept: application/json" -H "content-type: application/json" \
             -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
           
-          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token')
+          ACCESS_TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token // empty')
+          if [ -z "$ACCESS_TOKEN" ]; then
+            echo "Authentication Failed. Raw Response:"
+            echo "$TOKEN_RESP"
+            exit 1
+          fi
 
-          UPLOAD_RESP=$(curl -s -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
+          UPLOAD_RESP=$(curl -s -S -X PUT "$API_HOST/api/v1/bar-files/$ROUTE_NAME" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "Content-Type: application/octet-stream" \
             -H "Accept: application/json" \
             --data-binary "@$BAR_FILE")
 
-          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url')
+          BAR_URL=$(echo "$UPLOAD_RESP" | jq -r '.url // empty')
+          if [ -z "$BAR_URL" ]; then
+            echo "BAR Upload Failed. Raw Response:"
+            echo "$UPLOAD_RESP"
+            exit 1
+          fi
 
           PAYLOAD=$(jq -n --arg name "$RUNTIME_NAME" --arg bar "$BAR_URL" \
             '{metadata: {name: $name}, spec: {version: "13.0", barURL: [$bar], flowType: {toolkitFlow: true}, desiredRunState: "running", replicas: 1}}')
 
-          curl -s -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
+          DEPLOY_RESP=$(curl -s -S -X PUT "$API_HOST/api/v1/integration-runtimes/$RUNTIME_NAME" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "Content-Type: application/json" -H "Accept: application/json" \
-            -d "$PAYLOAD"
+            -d "$PAYLOAD")
+
+          echo "Prod Deployment Response: $DEPLOY_RESP"
