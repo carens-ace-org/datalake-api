@@ -7,13 +7,15 @@ public class BenefitBalanceResponseDto {
     private Long benefitId;
     private String benefit;
     private BigDecimal balance;
+    private String currency;
 
     public BenefitBalanceResponseDto() {}
 
-    public BenefitBalanceResponseDto(Long benefitId, String benefit, BigDecimal balance) {
+    public BenefitBalanceResponseDto(Long benefitId, String benefit, BigDecimal balance, String currency) {
         this.benefitId = benefitId;
         this.benefit = benefit;
         this.balance = balance;
+        this.currency = currency;
     }
 
     public Long getBenefitId() {
@@ -39,4 +41,12 @@ public class BenefitBalanceResponseDto {
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
 }
