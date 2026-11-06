@@ -171,10 +171,10 @@ jobs:
             -Dsonar.qualitygate.timeout=600
 
   # ==========================================
-  # LINEAR CD STAGE: Dev -> Test -> Prod (Frankfurt)
+  # LINEAR CD STAGE: Dev -> Test -> Prod 
   # ==========================================
   deploy-dev:
-    name: 7. Deploy to Dev (Frankfurt)
+    name: 7. Deploy to Dev 
     needs: sonarqube
     runs-on: ubuntu-latest
     environment:
@@ -194,7 +194,7 @@ jobs:
           TOKEN_RESP=$(curl -s -S -X POST "$API_HOST/api/v1/tokens" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
-            -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
+            -H "x-ibm-instance-id: ${{ vars.INSTANCE_ID }}" \
             -H "accept: application/json" -H "content-type: application/json" \
             -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
           
@@ -234,7 +234,7 @@ jobs:
           echo "Dev Deployment Response: $DEPLOY_RESP"
 
   deploy-test:
-    name: 8. Promote to Test (Frankfurt)
+    name: 8. Promote to Test 
     needs: deploy-dev
     runs-on: ubuntu-latest
     environment:
@@ -253,7 +253,7 @@ jobs:
           TOKEN_RESP=$(curl -s -S -X POST "$API_HOST/api/v1/tokens" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
-            -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
+            -H "x-ibm-instance-id: ${{ vars.INSTANCE_ID }}" \
             -H "accept: application/json" -H "content-type: application/json" \
             -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
           
@@ -290,11 +290,11 @@ jobs:
           echo "Test Deployment Response: $DEPLOY_RESP"
 
   deploy-prod:
-    name: 9. Promote to Prod (Frankfurt - Manual Gate)
+    name: 9. Promote to Prod
     needs: deploy-test
     runs-on: ubuntu-latest
     environment:
-      name: prod # Pauses here for manual review/approval in GitHub UI!
+      name: prod 
     steps:
       - uses: actions/checkout@v4
       - name: Run Production Deployment Sequence
@@ -309,7 +309,7 @@ jobs:
           TOKEN_RESP=$(curl -s -S -X POST "$API_HOST/api/v1/tokens" \
             -H "X-IBM-Client-Id: ${{ secrets.CLIENT_ID }}" \
             -H "X-IBM-Client-Secret: ${{ secrets.CLIENT_SECRET }}" \
-            -H "x-ibm-instance-id: ${{ secrets.INSTANCE_ID }}" \
+            -H "x-ibm-instance-id: ${{ vars.INSTANCE_ID }}" \
             -H "accept: application/json" -H "content-type: application/json" \
             -d "{\"apiKey\": \"${{ secrets.API_KEY }}\"}")
           
